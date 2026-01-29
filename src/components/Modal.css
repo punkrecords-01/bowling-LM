@@ -102,6 +102,20 @@ hr {
     font-style: italic;
 }
 
+.comanda-selector {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.comanda-selector input {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+}
+
 .summary-intro {
     color: var(--text-muted);
     font-size: 0.9rem;

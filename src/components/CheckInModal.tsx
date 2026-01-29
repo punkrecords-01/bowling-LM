@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Modal.css';
+import ComandaModal from './ComandaModal';
 import { Reservation } from '../types';
 
 interface CheckInModalProps {
@@ -11,6 +12,7 @@ interface CheckInModalProps {
 
 const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, laneName, onCancel, onConfirm }) => {
     const [comanda, setComanda] = useState('');
+    const [showComandaModal, setShowComandaModal] = useState(false);
 
     return (
         <div className="modal-overlay">
@@ -38,23 +40,33 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, laneName, onCa
 
                     <div className="form-group">
                         <label>Associar Comanda</label>
-                        <input
-                            type="text"
-                            value={comanda}
-                            onChange={e => setComanda(e.target.value)}
-                            placeholder="Número da comanda (ex: 1234)"
-                            required
-                        />
+                        <div className="comanda-selector">
+                            <input
+                                type="text"
+                                value={comanda}
+                                readOnly
+                                placeholder="Selecione uma comanda..."
+                            />
+                            <button type="button" className="secondary-btn" onClick={() => setShowComandaModal(true)}>Selecionar</button>
+                        </div>
+                        {comanda === '' && <div className="modal-note">Selecione uma comanda para continuar.</div>}
                     </div>
 
                     <div className="confirmation-warning">
                         Se confirmar, a reserva será iniciada e a pista será aberta com a comanda informada.
                     </div>
+
+                    {showComandaModal && (
+                        <ComandaModal
+                            onSelect={(num) => { setComanda(num); setShowComandaModal(false); }}
+                            onClose={() => setShowComandaModal(false)}
+                        />
+                    )}
                 </div>
 
                 <footer className="modal-footer">
                     <button className="secondary-btn" onClick={onCancel}>Cancelar</button>
-                    <button className="primary-btn" onClick={() => onConfirm(comanda || String(Math.floor(Math.random() * 90000) + 10000))}>Confirmar e Iniciar</button>
+                    <button className="primary-btn" disabled={comanda === ''} onClick={() => onConfirm(comanda)}>Confirmar e Iniciar</button>
                 </footer>
             </div>
         </div>
