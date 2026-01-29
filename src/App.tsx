@@ -17,7 +17,7 @@ import OpenConfirmationModal from './components/OpenConfirmationModal';
 import CheckInModal from './components/CheckInModal';
 import MaintenanceModal from './components/MaintenanceModal';
 import HistoryView from './components/HistoryView';
-import { SettingsIcon, CheckIcon, WrenchIcon } from './components/Icons';
+import { SettingsIcon, CheckIcon, WrenchIcon, AlertTriangleIcon } from './components/Icons';
 
 function AppContent() {
   const { lanes, sessions, reservations, openLane, closeLane, setMaintenance, clearMaintenance } = useLanes();
@@ -260,19 +260,23 @@ function AppContent() {
                             isPaused={lane.isMaintenancePaused} 
                           />
                           {lane.isMaintenancePaused ? (
-                            <div className="maintenance-mini-alert">PAUSADA PARA MANUTENÇÃO</div>
+                            <div className="paused-state-badge">
+                              <AlertTriangleIcon width={14} height={14} />
+                              <span>PAUSADA</span>
+                            </div>
                           ) : (
                             <span className="opened-by">Aberta por: {session.openedBy}</span>
                           )}
                         </div>
                       ) : lane.status === 'maintenance' ? (
-                        <div className="maintenance-info">
-                          <div className="maintenance-banner">EM MANUTENÇÃO</div>
-                          <div className="maintenance-reason">
-                            <span className="maintenance-reason-label">Motivo</span>
-                            <span className="maintenance-reason-text">{lane.maintenanceReason}</span>
+                        <div className="maintenance-state-container">
+                          <div className="maintenance-icon-wrapper">
+                            <AlertTriangleIcon width={40} height={40} />
                           </div>
-                          <div className="maintenance-hint">Pista indisponível até finalizar manutenção.</div>
+                          <div className="maintenance-content">
+                            <span className="maintenance-title">EM MANUTENÇÃO</span>
+                            <span className="maintenance-desc">{lane.maintenanceReason}</span>
+                          </div>
                         </div>
                       ) : (nextRes && isSameDay) ? (
                         <div className="session-info reservation">
