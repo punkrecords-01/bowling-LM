@@ -308,17 +308,17 @@ function AppContent() {
                       </button>
 
                       <button
-                        className="subtle-tool-btn"
-                        title={lane.status === 'maintenance' ? 'Finalizar Manutenção' : 'Marcar Manutenção'}
+                        className={`tool-btn-circle ${lane.status === 'maintenance' || lane.isMaintenancePaused ? 'active-warning' : ''}`}
+                        title={lane.status === 'maintenance' || lane.isMaintenancePaused ? 'Retomar / Finalizar' : 'Manutenção'}
                         onClick={() => {
-                          if (lane.status === 'maintenance') {
+                          if (lane.status === 'maintenance' || lane.isMaintenancePaused) {
                             clearMaintenance(lane.id);
                           } else {
                             setMaintenanceTarget({ laneId: lane.id, laneName: lane.name });
                           }
                         }}
                       >
-                        {lane.status === 'maintenance' ? '✅' : '🛠️'}
+                        {lane.status === 'maintenance' || lane.isMaintenancePaused ? '✓' : '⚙️'}
                       </button>
                     </div>
                   </div>

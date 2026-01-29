@@ -398,16 +398,36 @@
   margin-bottom: 6px;
 }
 
+.maintenance-mini-alert {
+  background: var(--status-danger);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  animation: blink-red 1s infinite;
+}
+
+@keyframes blink-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .lane-card.maintenance {
   border-color: var(--status-danger);
   background: repeating-linear-gradient(
     45deg,
-    rgba(239, 68, 68, 0.05),
-    rgba(239, 68, 68, 0.05) 10px,
-    rgba(239, 68, 68, 0.08) 10px,
-    rgba(239, 68, 68, 0.08) 20px
+    rgba(239, 68, 68, 0.02),
+    rgba(239, 68, 68, 0.02) 10px,
+    rgba(239, 68, 68, 0.04) 10px,
+    rgba(239, 68, 68, 0.04) 20px
   );
-  opacity: 0.9;
+}
+
+.lane-card.paused {
+  border-color: var(--status-danger);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
 }
 
 .maintenance-reason-tag {
@@ -422,30 +442,45 @@
   margin-top: 8px;
 }
 
-.subtle-tool-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.tool-btn-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
   color: var(--text-muted);
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 1rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.subtle-tool-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+.tool-btn-circle:hover {
   border-color: var(--primary);
-  transform: scale(1.05);
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tool-btn-circle.active-warning {
+  background: var(--status-danger);
+  color: white;
+  border-color: var(--status-danger);
+  animation: pulse-danger-btn 2s infinite;
+}
+
+@keyframes pulse-danger-btn {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .lane-footer {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   justify-content: center;
   padding: 12px;
 }

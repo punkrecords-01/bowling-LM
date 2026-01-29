@@ -198,10 +198,12 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLanes(prev => prev.map(lane => {
             if (lane.id !== laneId) return lane;
 
-            if (lane.isMaintenancePaused && lane.currentSessionId) {
-                // Find start time and calculate duration to add to maintenanceTimeTotal
+            const wasPaused = lane.isMaintenancePaused;
+            const sid = lane.currentSessionId;
+
+            if (wasPaused && sid) {
                 setSessions(sPrev => sPrev.map(s => {
-                    if (s.id === lane.currentSessionId && s.lastMaintenanceStart) {
+                    if (s.id === sid && s.lastMaintenanceStart) {
                         const pauseDuration = now - s.lastMaintenanceStart;
                         return { 
                             ...s, 
@@ -211,17 +213,11 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     }
                     return s;
                 }));
-
-                return { 
-                    ...lane, 
-                    maintenanceReason: undefined,
-                    isMaintenancePaused: false 
-                };
             }
 
             return { 
                 ...lane, 
-                status: 'free', 
+                status: wasPaused ? 'active' : 'free', 
                 maintenanceReason: undefined,
                 isMaintenancePaused: false 
             };
