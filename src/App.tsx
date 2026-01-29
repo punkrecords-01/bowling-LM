@@ -237,8 +237,10 @@ function AppContent() {
                 }
                 if (lane.status === 'free' && isReservedSoon) effectiveStatus = 'reserved';
 
+                const isPaused = lane.status === 'active' && lane.isMaintenancePaused;
+
                 return (
-                  <div key={lane.id} className={`lane-card ${effectiveStatus}`}>
+                  <div key={lane.id} className={`lane-card ${effectiveStatus} ${isPaused ? 'paused' : ''}`}>
                     <div className="lane-header">
                       <div className="lane-id-group">
                         <span className="lane-number">{lane.name.split(' ')[1]}</span>
@@ -251,8 +253,16 @@ function AppContent() {
                       {lane.status === 'active' && session ? (
                         <div className="session-info">
                           <span className="comanda">Comanda: #{session.comanda}</span>
-                          <Timer startTime={session.startTime} />
-                          <span className="opened-by">Aberta por: {session.openedBy}</span>
+                          <Timer 
+                            startTime={session.startTime} 
+                            pauseTimeTotal={session.maintenanceTimeTotal} 
+                            isPaused={lane.isMaintenancePaused} 
+                          />
+                          {lane.isMaintenancePaused ? (
+                            <div className="maintenance-mini-alert">PAUSADA PARA MANUTENÇÃO</div>
+                          ) : (
+                            <span className="opened-by">Aberta por: {session.openedBy}</span>
+                          )}
                         </div>
                       ) : lane.status === 'maintenance' ? (
                         <div className="maintenance-info">

@@ -2,18 +2,26 @@ import React, { useState, useEffect } from 'react';
 
 interface TimerProps {
     startTime: number;
+    pauseTimeTotal?: number;
+    isPaused?: boolean;
 }
 
-const Timer: React.FC<TimerProps> = ({ startTime }) => {
+const Timer: React.FC<TimerProps> = ({ startTime, pauseTimeTotal = 0, isPaused }) => {
     const [elapsed, setElapsed] = useState(0);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setElapsed(Math.floor((Date.now() - startTime) / 1000));
-        }, 1000);
+        const update = () => {
+            const now = Date.now();
+            const totalMs = now - startTime - pauseTimeTotal;
+            setElapsed(Math.max(0, Math.floor(totalMs / 1000)));
+        };
 
+        update();
+        if (isPaused) return;
+
+        const interval = setInterval(update, 1000);
         return () => clearInterval(interval);
-    }, [startTime]);
+    }, [startTime, pauseTimeTotal, isPaused]);
 
     const formatTime = (seconds: number) => {
         const h = Math.floor(seconds / 3600);

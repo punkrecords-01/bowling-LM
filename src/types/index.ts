@@ -6,6 +6,7 @@ export interface Lane {
     status: LaneStatus;
     currentSessionId?: string;
     maintenanceReason?: string;
+    isMaintenancePaused?: boolean;
     totalUsageTime: number; // cumulative milliseconds
     lastMaintenanceDate?: number;
 }
@@ -39,6 +40,7 @@ export interface Session {
     endTime?: number;
     pauseTimeTotal: number; // in milliseconds
     maintenanceTimeTotal: number; // in milliseconds
+    lastMaintenanceStart?: number; // timestamp
     isActive: boolean;
 }
 

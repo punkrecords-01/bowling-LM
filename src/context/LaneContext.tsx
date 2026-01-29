@@ -169,16 +169,63 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const setMaintenance = (laneId: string, reason: string) => {
-        setLanes(prev => prev.map(lane =>
-            lane.id === laneId ? { ...lane, status: 'maintenance', maintenanceReason: reason } : lane
-        ));
+        const now = Date.now();
+        setLanes(prev => prev.map(lane => {
+            if (lane.id !== laneId) return lane;
+            
+            const isCurrentlyActive = lane.status === 'active';
+            
+            if (isCurrentlyActive && lane.currentSessionId) {
+                // Update session to record when maintenance pause started
+                setSessions(sPrev => sPrev.map(s => 
+                    s.id === lane.currentSessionId ? { ...s, lastMaintenanceStart: now } : s
+                ));
+            }
+
+            return { 
+                ...lane, 
+                status: isCurrentlyActive ? 'active' : 'maintenance', 
+                maintenanceReason: reason,
+                isMaintenancePaused: isCurrentlyActive
+            };
+        }));
+        
         addLog('Manutenção', `Pista: ${laneId}, Motivo: ${reason}`);
     };
 
     const clearMaintenance = (laneId: string) => {
-        setLanes(prev => prev.map(lane =>
-            lane.id === laneId ? { ...lane, status: 'free', maintenanceReason: undefined } : lane
-        ));
+        const now = Date.now();
+        setLanes(prev => prev.map(lane => {
+            if (lane.id !== laneId) return lane;
+
+            if (lane.isMaintenancePaused && lane.currentSessionId) {
+                // Find start time and calculate duration to add to maintenanceTimeTotal
+                setSessions(sPrev => sPrev.map(s => {
+                    if (s.id === lane.currentSessionId && s.lastMaintenanceStart) {
+                        const pauseDuration = now - s.lastMaintenanceStart;
+                        return { 
+                            ...s, 
+                            maintenanceTimeTotal: (s.maintenanceTimeTotal || 0) + pauseDuration,
+                            lastMaintenanceStart: undefined
+                        };
+                    }
+                    return s;
+                }));
+
+                return { 
+                    ...lane, 
+                    maintenanceReason: undefined,
+                    isMaintenancePaused: false 
+                };
+            }
+
+            return { 
+                ...lane, 
+                status: 'free', 
+                maintenanceReason: undefined,
+                isMaintenancePaused: false 
+            };
+        }));
         addLog('Liberar Pista', `Pista: ${laneId}`);
     };
 
