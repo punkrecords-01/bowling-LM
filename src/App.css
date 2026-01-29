@@ -416,13 +416,49 @@
 
 .lane-card.maintenance {
   border-color: var(--status-danger);
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(239, 68, 68, 0.02),
-    rgba(239, 68, 68, 0.02) 10px,
-    rgba(239, 68, 68, 0.04) 10px,
-    rgba(239, 68, 68, 0.04) 20px
-  );
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04));
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2), 0 12px 30px rgba(239, 68, 68, 0.12);
+}
+
+.maintenance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.maintenance-banner {
+  background: var(--status-danger);
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.maintenance-reason {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.maintenance-reason-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.maintenance-reason-text {
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.maintenance-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
 }
 
 .lane-card.paused {
@@ -442,47 +478,92 @@
   margin-top: 8px;
 }
 
-.tool-btn-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+.lane-footer {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.lane-action-main {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lane-action-main.active {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--status-danger);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.lane-action-main.active:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.lane-action-main.free {
+  background: var(--primary);
+  color: #000;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.lane-action-main.free:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4);
+}
+
+.lane-action-main.reserved {
+  background: var(--status-reserved);
+  color: #fff;
+}
+
+.lane-action-tool {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: transparent;
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
   color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s;
   font-size: 1.1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.tool-btn-circle:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+.lane-action-tool:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-muted);
+  color: var(--text-main);
 }
 
-.tool-btn-circle.active-warning {
+.lane-action-tool.active {
   background: var(--status-danger);
-  color: white;
   border-color: var(--status-danger);
-  animation: pulse-danger-btn 2s infinite;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  animation: pulse-tool 2s infinite;
 }
 
-@keyframes pulse-danger-btn {
+@keyframes pulse-tool {
   0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
   100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-.lane-footer {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  padding: 12px;
 }
 
 .hover-info-item:last-child {

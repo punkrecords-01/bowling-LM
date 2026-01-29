@@ -266,8 +266,12 @@ function AppContent() {
                         </div>
                       ) : lane.status === 'maintenance' ? (
                         <div className="maintenance-info">
-                          <span className="status-text warning">EM MANUTENÇÃO</span>
-                          <div className="maintenance-reason-tag">{lane.maintenanceReason}</div>
+                          <div className="maintenance-banner">EM MANUTENÇÃO</div>
+                          <div className="maintenance-reason">
+                            <span className="maintenance-reason-label">Motivo</span>
+                            <span className="maintenance-reason-text">{lane.maintenanceReason}</span>
+                          </div>
+                          <div className="maintenance-hint">Pista indisponível até finalizar manutenção.</div>
                         </div>
                       ) : (nextRes && isSameDay) ? (
                         <div className="session-info reservation">
@@ -300,7 +304,7 @@ function AppContent() {
                     
                     <div className="lane-footer">
                       <button
-                        className="action-btn"
+                        className={`lane-action-main ${lane.status}`}
                         onClick={() => handleLaneAction(lane.id)}
                       >
                         {lane.status === 'active' ? 'Fechar Pista' :
@@ -308,17 +312,19 @@ function AppContent() {
                       </button>
 
                       <button
-                        className={`tool-btn-circle ${lane.status === 'maintenance' || lane.isMaintenancePaused ? 'active-warning' : ''}`}
-                        title={lane.status === 'maintenance' || lane.isMaintenancePaused ? 'Retomar / Finalizar' : 'Manutenção'}
+                        className={`lane-action-tool ${lane.status === 'maintenance' || lane.isMaintenancePaused ? 'active' : ''}`}
+                        title="Manutenção / Pausa"
                         onClick={() => {
-                          if (lane.status === 'maintenance' || lane.isMaintenancePaused) {
-                            clearMaintenance(lane.id);
-                          } else {
-                            setMaintenanceTarget({ laneId: lane.id, laneName: lane.name });
-                          }
+                           if (lane.status === 'maintenance' || lane.isMaintenancePaused) {
+                             clearMaintenance(lane.id);
+                           } else {
+                             setMaintenanceTarget({ laneId: lane.id, laneName: lane.name });
+                           }
                         }}
                       >
-                        {lane.status === 'maintenance' || lane.isMaintenancePaused ? '✓' : '⚙️'}
+                        <span className="tool-icon">
+                          {lane.status === 'maintenance' || lane.isMaintenancePaused ? '✓' : '⚙️'}
+                        </span>
                       </button>
                     </div>
                   </div>
