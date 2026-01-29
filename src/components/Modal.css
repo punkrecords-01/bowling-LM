@@ -116,6 +116,12 @@ hr {
     background: transparent;
 }
 
+.validation-error {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--status-danger);
+}
+
 .summary-intro {
     color: var(--text-muted);
     font-size: 0.9rem;

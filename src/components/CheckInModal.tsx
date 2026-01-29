@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Modal.css';
 import ComandaModal from './ComandaModal';
 import { Reservation } from '../types';
+import { useLanes } from '../context/LaneContext';
 
 interface CheckInModalProps {
     reservation: Reservation;
@@ -11,8 +12,19 @@ interface CheckInModalProps {
 }
 
 const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, laneName, onCancel, onConfirm }) => {
+    const { sessions } = useLanes();
     const [comanda, setComanda] = useState('');
     const [showComandaModal, setShowComandaModal] = useState(false);
+    const [validationMsg, setValidationMsg] = useState<string | null>(null);
+
+    const validate = (val: string) => {
+        if (!val) return 'Selecione uma comanda para continuar.';
+        const num = parseInt(val, 10);
+        if (isNaN(num) || num < 1 || num > 60) return 'Número inválido. Use 1–60.';
+        const inUse = sessions.some(s => s.isActive && s.comanda === val);
+        if (inUse) return `Comanda #${val} já está em uso.`;
+        return null;
+    };
 
     return (
         <div className="modal-overlay">
@@ -44,12 +56,20 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, laneName, onCa
                             <input
                                 type="text"
                                 value={comanda}
-                                readOnly
-                                placeholder="Selecione uma comanda..."
+                                onChange={e => {
+                                    const sanitized = e.target.value.replace(/\D/g, '');
+                                    // prevent leading zeros
+                                    const normalized = sanitized.replace(/^0+/, '');
+                                    setComanda(normalized);
+                                    setValidationMsg(validate(normalized));
+                                }}
+                                placeholder="Digite ou selecione uma comanda..."
+                                inputMode="numeric"
+                                autoFocus
                             />
                             <button type="button" className="secondary-btn" onClick={() => setShowComandaModal(true)}>Selecionar</button>
                         </div>
-                        {comanda === '' && <div className="modal-note">Selecione uma comanda para continuar.</div>}
+                        {validationMsg ? <div className="validation-error">{validationMsg}</div> : <div className="modal-note">Selecione ou digite uma comanda válida (1-60).</div>}
                     </div>
 
                     <div className="confirmation-warning">
@@ -58,15 +78,15 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, laneName, onCa
 
                     {showComandaModal && (
                         <ComandaModal
-                            onSelect={(num) => { setComanda(num); setShowComandaModal(false); }}
+                            onSelect={(num) => { setComanda(num); setValidationMsg(validate(num)); setShowComandaModal(false); }}
                             onClose={() => setShowComandaModal(false)}
                         />
                     )}
                 </div>
 
                 <footer className="modal-footer">
-                    <button className="secondary-btn" onClick={onCancel}>Cancelar</button>
-                    <button className="primary-btn" disabled={comanda === ''} onClick={() => onConfirm(comanda)}>Confirmar e Iniciar</button>
+                    <button className="secondary-btn" onClick={() => { setComanda(''); setValidationMsg(null); onCancel(); }}>Cancelar</button>
+                    <button className="primary-btn" disabled={!!validationMsg} onClick={() => onConfirm(comanda)}>Confirmar e Iniciar</button>
                 </footer>
             </div>
         </div>
