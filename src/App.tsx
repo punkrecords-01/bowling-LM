@@ -17,6 +17,7 @@ import OpenConfirmationModal from './components/OpenConfirmationModal';
 import CheckInModal from './components/CheckInModal';
 import MaintenanceModal from './components/MaintenanceModal';
 import HistoryView from './components/HistoryView';
+import { SettingsIcon, CheckIcon, WrenchIcon } from './components/Icons';
 
 function AppContent() {
   const { lanes, sessions, reservations, openLane, closeLane, setMaintenance, clearMaintenance } = useLanes();
@@ -323,7 +324,7 @@ function AppContent() {
                         }}
                       >
                         <span className="tool-icon">
-                          {lane.status === 'maintenance' || lane.isMaintenancePaused ? '✓' : '⚙️'}
+                          {lane.status === 'maintenance' || lane.isMaintenancePaused ? <CheckIcon width={22} height={22} /> : <WrenchIcon width={18} height={18} />}
                         </span>
                       </button>
                     </div>
