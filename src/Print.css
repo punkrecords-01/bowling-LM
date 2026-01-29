@@ -1,0 +1,73 @@
+/* Printer Optimized Styles - Thermal Receipt (80mm) */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .receipt-print-area,
+    .receipt-print-area * {
+        visibility: visible;
+    }
+
+    .receipt-print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        /* Standard thermal printer width */
+        padding: 10px;
+        color: black !important;
+        background: white !important;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 12pt;
+        line-height: 1.2;
+    }
+
+    .receipt-header {
+        text-align: center;
+        border-bottom: 1px dashed black;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+    }
+
+    .receipt-header h1 {
+        font-size: 16pt;
+        margin: 0;
+    }
+
+    .receipt-body {
+        margin-bottom: 10px;
+    }
+
+    .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+    .receipt-footer {
+        text-align: center;
+        border-top: 1px dashed black;
+        margin-top: 10px;
+        padding-top: 10px;
+        font-size: 10pt;
+    }
+
+    /* Hide UI elements during print */
+    .app-header,
+    .app-content,
+    .modal-overlay {
+        display: none !important;
+    }
+
+    .modal-overlay.printing {
+        display: flex !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+    }
+
+    .modal-content {
+        box-shadow: none !important;
+        border: none !important;
+    }
+}

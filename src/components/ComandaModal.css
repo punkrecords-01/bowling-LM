@@ -1,0 +1,60 @@
+.comanda-modal {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 32px;
+    width: 400px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.comanda-search {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 12px 20px;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.comanda-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-content: start;
+    /* Prevent items from stretching vertically */
+    gap: 10px;
+    height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+}
+
+.comanda-btn {
+    height: 50px;
+    /* Fixed height for consistent look */
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comanda-btn:hover {
+    background-color: var(--primary-glow);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.modal-header h3 {
+    font-size: 1rem;
+    color: var(--text-muted);
+}

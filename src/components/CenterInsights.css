@@ -1,0 +1,76 @@
+.insights-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.insight-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: var(--transition-base);
+}
+
+.insight-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px);
+}
+
+.insight-card.highlight {
+    border-color: var(--status-reserved);
+    background: linear-gradient(135deg, var(--bg-card), rgba(14, 165, 233, 0.05));
+}
+
+.insight-card.highlight-gold {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, var(--bg-card), rgba(255, 215, 0, 0.05));
+}
+
+.insight-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.insight-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--text-main);
+}
+
+.insight-value small {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.insight-progress {
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.insight-bar {
+    height: 100%;
+    background-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+    transition: width 1s ease-out;
+}
+
+.insight-hint {
+    font-size: 0.65rem;
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: auto;
+}
