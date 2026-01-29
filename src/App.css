@@ -398,6 +398,19 @@
   margin-bottom: 6px;
 }
 
+.lane-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 12px;
+}
+
+.maintenance-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
 .hover-info-item:last-child {
   margin-bottom: 0;
 }

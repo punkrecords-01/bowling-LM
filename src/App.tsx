@@ -15,16 +15,18 @@ import ComandaModal from './components/ComandaModal';
 import ReceiptView from './components/ReceiptView';
 import OpenConfirmationModal from './components/OpenConfirmationModal';
 import CheckInModal from './components/CheckInModal';
+import MaintenanceModal from './components/MaintenanceModal';
 import HistoryView from './components/HistoryView';
 
 function AppContent() {
-  const { lanes, sessions, reservations, openLane, closeLane } = useLanes();
+  const { lanes, sessions, reservations, openLane, closeLane, setMaintenance, clearMaintenance } = useLanes();
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = React.useState('lanes');
   const [closingLane, setClosingLane] = React.useState<{ lane: Lane, session: Session } | null>(null);
   const [openingLaneId, setOpeningLaneId] = React.useState<string | null>(null);
   const [pendingComanda, setPendingComanda] = React.useState<string | null>(null);
   const [checkInReservation, setCheckInReservation] = React.useState<{ res: Reservation, targetLaneId: string } | null>(null);
+  const [maintenanceTarget, setMaintenanceTarget] = React.useState<{ laneId: string, laneName: string } | null>(null);
   const [printedReceipt, setPrintedReceipt] = React.useState<{ laneName: string, comanda: string, startTime: number, endTime: number } | null>(null);
 
   const { convertReservationToLane } = useLanes();
@@ -291,6 +293,21 @@ function AppContent() {
                         {lane.status === 'active' ? 'Fechar Pista' :
                           effectiveStatus === 'reserved' ? 'Check-in' : 'Abrir Pista'}
                       </button>
+
+                      <button
+                        className="secondary-btn maintenance-btn"
+                        onClick={() => {
+                          if (lane.status === 'maintenance') {
+                            // finalize maintenance
+                            clearMaintenance(lane.id);
+                          } else {
+                            // open modal to mark maintenance
+                            setMaintenanceTarget({ laneId: lane.id, laneName: lane.name });
+                          }
+                        }}
+                      >
+                        {lane.status === 'maintenance' ? 'Finalizar Manut.' : 'Marcar Manut.'}
+                      </button>
                     </div>
                   </div>
                 );
@@ -334,6 +351,14 @@ function AppContent() {
           onConfirm={() => {
             confirmOpen(openingLaneId, pendingComanda);
           }}
+        />
+      )}
+
+      {maintenanceTarget && (
+        <MaintenanceModal
+          laneName={maintenanceTarget.laneName}
+          onCancel={() => setMaintenanceTarget(null)}
+          onConfirm={(reason) => { setMaintenanceTarget(null); setMaintenance(maintenanceTarget.laneId, reason); }}
         />
       )}
 
