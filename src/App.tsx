@@ -82,6 +82,20 @@ function AppContent() {
     setPendingComanda(null);
   };
 
+  const confirmClose = () => {
+    if (closingLane) {
+      const { lane, session } = closingLane;
+      closeLane(lane.id);
+      setClosingLane(null);
+      setPrintedReceipt({
+        laneName: lane.name,
+        comanda: session.comanda,
+        startTime: session.startTime,
+        endTime: Date.now()
+      });
+    }
+  };
+
   const getReservationConflict = (laneId: string) => {
     const nowMs = Date.now();
     const SIXTY_MINS = 60 * 60000;
