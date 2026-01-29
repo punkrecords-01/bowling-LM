@@ -47,8 +47,9 @@ const AgendaView: React.FC = () => {
     };
 
     const sortedReservations = [...reservations].sort((a, b) => a.startTime - b.startTime);
+    const nonTerminal = ['pending', 'arrived', 'delayed'];
     const filteredReservations = sortedReservations.filter(r => {
-        const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+        const matchesStatus = statusFilter === 'all' ? nonTerminal.includes(r.status) : r.status === statusFilter;
         const resDate = toLocalDateISO(r.startTime);
         const matchesDate = resDate === dateFilter;
         return matchesStatus && matchesDate;
