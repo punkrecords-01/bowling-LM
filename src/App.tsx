@@ -261,8 +261,8 @@ function AppContent() {
                           />
                           {lane.isMaintenancePaused ? (
                             <div className="paused-state-badge">
-                              <AlertTriangleIcon width={14} height={14} />
-                              <span>PAUSADA</span>
+                              <WrenchIcon width={14} height={14} />
+                              <span>EM MANUTENÇÃO</span>
                             </div>
                           ) : (
                             <span className="opened-by">Aberta por: {session.openedBy}</span>
