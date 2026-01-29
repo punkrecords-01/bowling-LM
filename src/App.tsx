@@ -255,7 +255,10 @@ function AppContent() {
                           <span className="opened-by">Aberta por: {session.openedBy}</span>
                         </div>
                       ) : lane.status === 'maintenance' ? (
-                        <span className="status-text">Manut.: {lane.maintenanceReason}</span>
+                        <div className="maintenance-info">
+                          <span className="status-text warning">EM MANUTENÇÃO</span>
+                          <div className="maintenance-reason-tag">{lane.maintenanceReason}</div>
+                        </div>
                       ) : (nextRes && isSameDay) ? (
                         <div className="session-info reservation">
                           <span className="res-time-label">
@@ -295,18 +298,17 @@ function AppContent() {
                       </button>
 
                       <button
-                        className="secondary-btn maintenance-btn"
+                        className="subtle-tool-btn"
+                        title={lane.status === 'maintenance' ? 'Finalizar Manutenção' : 'Marcar Manutenção'}
                         onClick={() => {
                           if (lane.status === 'maintenance') {
-                            // finalize maintenance
                             clearMaintenance(lane.id);
                           } else {
-                            // open modal to mark maintenance
                             setMaintenanceTarget({ laneId: lane.id, laneName: lane.name });
                           }
                         }}
                       >
-                        {lane.status === 'maintenance' ? 'Finalizar Manut.' : 'Marcar Manut.'}
+                        {lane.status === 'maintenance' ? '✅' : '🛠️'}
                       </button>
                     </div>
                   </div>

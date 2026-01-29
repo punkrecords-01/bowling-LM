@@ -398,17 +398,56 @@
   margin-bottom: 6px;
 }
 
-.lane-footer {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  padding: 12px;
+.lane-card.maintenance {
+  border-color: var(--status-danger);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(239, 68, 68, 0.05),
+    rgba(239, 68, 68, 0.05) 10px,
+    rgba(239, 68, 68, 0.08) 10px,
+    rgba(239, 68, 68, 0.08) 20px
+  );
+  opacity: 0.9;
 }
 
-.maintenance-btn {
-  padding: 8px 12px;
+.maintenance-reason-tag {
+  background: var(--status-danger);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.subtle-tool-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.subtle-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.lane-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 12px;
 }
 
 .hover-info-item:last-child {
