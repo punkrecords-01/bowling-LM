@@ -131,10 +131,6 @@ function AppContent() {
       <main className="app-content">
         {activeTab === 'lanes' && (
           <section className="dashboard fade-in">
-            <header className="section-header">
-              <h2>Painel de Hoje</h2>
-            </header>
-
             <div className="dashboard-top-row">
               <CenterInsights />
               <UpcomingReservations onCheckIn={(id) => setCheckingInReservationId(id)} />
@@ -178,11 +174,19 @@ function AppContent() {
                 const isPaused = lane.status === 'active' && lane.isMaintenancePaused;
 
                 return (
-                    <div key={lane.id} className={`lane-card ${effectiveStatus} ${isPaused ? 'paused' : ''}`} onClick={() => setDetailLaneId(lane.id)} style={{ cursor: 'pointer' }}>
+                  <div key={lane.id} className={`lane-card ${effectiveStatus} ${isPaused ? 'paused' : ''}`} onClick={() => setDetailLaneId(lane.id)} style={{ cursor: 'pointer' }}>
                     <div className="lane-header-top">
-                      <span className="small-lane-label">PISTA</span>
-                      <span className="lane-number">{lane.name.split(' ')[1]}</span>
+                      <div className="lane-badge-group">
+                        <span className="small-lane-label">{lane.name.split(' ')[1]}</span>
+                        {isPaused && (
+                          <div className="paused-state-badge">
+                            <WrenchIcon width={10} height={10} />
+                            <span>PAUSADA</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
+
                     <div className="lane-body">
                       {lane.status === 'active' && session ? (
                         <div className="session-info">
@@ -190,24 +194,21 @@ function AppContent() {
                             <span className="comanda-label">Comanda</span>
                             <span className="comanda-number">#{session.comanda}</span>
                           </div>
-                          <Timer 
-                            startTime={session.startTime} 
-                            pauseTimeTotal={session.maintenanceTimeTotal} 
-                            isPaused={lane.isMaintenancePaused} 
-                          />
-                          {lane.isMaintenancePaused ? (
-                            <div className="paused-state-badge">
-                              <WrenchIcon width={14} height={14} />
-                              <span>EM MANUTENÇÃO</span>
-                            </div>
-                          ) : (
-                            <span className="opened-by">Operador: {session.openedBy}</span>
-                          )}
+                          <div className="timer-wrapper">
+                            <Timer 
+                              startTime={session.startTime} 
+                              pauseTimeTotal={session.maintenanceTimeTotal} 
+                              isPaused={lane.isMaintenancePaused} 
+                            />
+                            {!lane.isMaintenancePaused && (
+                              <span className="opened-by-mini">Op: {session.openedBy.split(' ')[0]}</span>
+                            )}
+                          </div>
                         </div>
                       ) : lane.status === 'maintenance' ? (
                         <div className="maintenance-state-container">
                           <div className="maintenance-icon-wrapper">
-                            <AlertTriangleIcon width={40} height={40} />
+                            <AlertTriangleIcon width={32} height={32} />
                           </div>
                           <div className="maintenance-content">
                             <span className="maintenance-title">EM MANUTENÇÃO</span>
@@ -215,23 +216,15 @@ function AppContent() {
                           </div>
                         </div>
                       ) : (
-                        <span className="status-text">{effectiveStatus === 'reserved' ? 'Reservada' : 'Disponível'}</span>
-                      )}
-                    </div>
-                    
-                    <div className="lane-hover-overlay">
-                      <div className="hover-info-item">
-                        <span className="hover-label">Última ação:</span>
-                        <span className="hover-value">
-                          {lane.status === 'active' ? `Início ${new Date(session?.startTime || 0).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` :
-                           lane.status === 'maintenance' ? 'Em manutenção' :
-                           effectiveStatus === 'reserved' ? 'Pista reservada' : 'Pista limpa'}
-                        </span>
-                      </div>
-                      {session && (
-                        <div className="hover-info-item">
-                          <span className="hover-label">Pausas:</span>
-                          <span className="hover-value">{Math.floor(session.pauseTimeTotal / 60000)} min</span>
+                        <div className="free-state-container">
+                          <span className="status-text">
+                            {effectiveStatus === 'reserved' ? 'Pista Reservada' : 'Disponível'}
+                          </span>
+                          {nextRes && effectiveStatus === 'reserved' && (
+                            <span className="next-res-hint">
+                              {new Date(nextRes.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -242,36 +235,47 @@ function AppContent() {
                           className="lane-action-main maintenance-active"
                           onClick={(e) => { e.stopPropagation(); clearMaintenance(lane.id); }}
                         >
-                          <CheckIcon width={18} height={18} style={{ marginRight: '8px' }} />
-                          Finalizar Manutenção
+                          <CheckIcon width={16} height={16} style={{ marginRight: '6px' }} />
+                          Liberar
                         </button>
                       ) : (
                         <>
                           <button
-                            className={`lane-action-main ${lane.status}`}
+                            className={`lane-action-main ${lane.status === 'active' ? 'active' : 'free'}`}
                             onClick={(e) => { e.stopPropagation(); handleLaneAction(lane.id); }}
                           >
-                            {lane.status === 'active' ? 'Fechar Pista' : 'Abrir Pista'}
+                            {lane.status === 'active' ? 'Finalizar' : 'Abrir Pista'}
                           </button>
 
                           <button
                             className="lane-action-tool"
-                            title="Marcar Manutenção"
+                            title="Manutenção"
                             onClick={(e) => { e.stopPropagation(); setMaintenanceTarget({ laneId: lane.id, laneName: lane.name }); }}
                           >
-                            <span className="tool-icon">
-                              <WrenchIcon width={18} height={18} />
-                            </span>
+                            <WrenchIcon width={16} height={16} />
                           </button>
                         </>
                       )}
                     </div>
+
+                    {lane.status === 'active' && session && (
+                      <div className="lane-progress-indicator">
+                        <div 
+                          className="lane-progress-fill" 
+                          style={{ 
+                            width: `${Math.min(100, ((Date.now() - session.startTime - (session.maintenanceTimeTotal || 0)) / 3600000) * 100)}%` 
+                          }}
+                        ></div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
           </section>
         )}
+
+        {activeTab === 'agenda' && <AgendaView />}
 
         {activeTab === 'logs' && (
           <HistoryView />

@@ -1,34 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap');
 
 :root {
-  /* Colors - Midnight Oceanic Glass (Deep, Calm, Professional) */
-  --bg-dark: #020617;        /* Slate 950 */
-  --bg-surface: rgba(15, 23, 42, 0.6); 
-  --bg-card: rgba(30, 41, 59, 0.4); 
-  --bg-card-hover: rgba(51, 65, 85, 0.5);
+  /* Colors - Monochrome Industrial with Soft Pastel Yellow Accents */
+  --bg-dark: #09090b;        /* Zinc 950 */
+  --bg-surface: rgba(24, 24, 27, 0.6); 
+  --bg-card: rgba(39, 39, 42, 0.4); 
+  --bg-card-hover: rgba(63, 63, 70, 0.5);
 
-  --primary: #0ea5e9;        /* Sky 500 - Pure & Professional */
-  --primary-glow: rgba(14, 165, 233, 0.25);
-  --secondary: #64748b;      /* Slate 500 */
+  --primary: #fef08a;        /* Yellow 200 - Soft Pastel Yellow */
+  --accent-amber: #fef08a;   
+  --primary-glow: rgba(254, 240, 138, 0.2);
+  --secondary: #71717a;      
 
-  /* Status Colors (Oceanic Palette) */
-  --status-free: #10b981;    /* Emerald 500 */
-  --status-active: #0ea5e9;  /* match primary */
-  --status-reserved: #6366f1; /* Indigo 500 */
-  --status-warning: #f59e0b; /* Amber 500 */
-  --status-error: #ef4444;   /* Red 500 */
+  /* Status Colors */
+  --status-free: #34d399;    /* Emerald Mint - Clean & Technical */
+  --status-active: #fef08a;  
+  --status-reserved: #a1a1aa; 
+  --status-warning: #fef08a; 
+  --status-error: #ef4444;   
 
-  /* Text - Optimax */
-  --text-main: #f1f5f9;      /* Slate 100 */
-  --text-muted: #94a3b8;     /* Slate 400 */
-  --text-on-primary: #ffffff;
+  /* Text - Zinc */
+  --text-main: #fafafa;      
+  --text-muted: #a1a1aa;     
+  --text-on-primary: #422006; /* Darker contrast for light yellow buttons */
 
   /* Glass Borders */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --border-glow: rgba(192, 132, 252, 0.4);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-strong: rgba(255, 255, 255, 0.1);
+  --border-glow: rgba(234, 179, 8, 0.12);
 
-  --glass-blur: blur(12px);
+  --glass-blur: blur(16px);
   --transition-base: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -43,8 +45,10 @@
 body {
   background-color: var(--bg-dark);
   background-image: 
-    radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 10% 10%, rgba(254, 240, 138, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(254, 240, 138, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(9, 9, 11, 1) 0%, transparent 100%),
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M0 0L80 80M80 0L0 80' stroke='%23ffffff' stroke-width='0.5' stroke-opacity='0.04' /%3E%3Cpath d='M40 0v80M0 40h80' stroke='%23ffffff' stroke-width='0.5' stroke-opacity='0.02' /%3E%3Ccircle cx='40' cy='40' r='1.5' fill='%23ffffff' fill-opacity='0.1' /%3E%3Ccircle cx='0' cy='0' r='1' fill='%23ffffff' fill-opacity='0.05' /%3E%3C/g%3E%3C/svg%3E");
   color: var(--text-main);
   overflow: hidden;
   min-height: 100vh;

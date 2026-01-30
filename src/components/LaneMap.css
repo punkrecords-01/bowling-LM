@@ -8,10 +8,61 @@
     gap: 32px;
 }
 
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.view-mode-selector {
+    display: flex;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px;
+    border-radius: 14px;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.view-mode-selector button {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-mode-selector button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0.8;
+}
+
+.view-mode-selector button.active {
+    background: var(--primary);
+    color: var(--bg-main);
+    opacity: 1;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.view-mode-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
 .map-legend {
     display: flex;
     gap: 24px;
-    justify-content: center;
 }
 
 .legend-item {
@@ -43,6 +94,250 @@
 
 .dot.maintenance {
     background-color: var(--status-error);
+}
+
+/* GRID LAYOUT */
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 8px 0;
+}
+
+/* PISTAS LAYOUT (Perspective) */
+.pistas-layout {
+    padding: 10px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.pistas-rows-group {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: center;
+    width: 100%;
+}
+
+.pistas-container {
+    display: flex;
+    gap: 16px;
+    perspective: 1200px;
+    width: 100%;
+    justify-content: center;
+}
+
+.pistas-container.bottom-row {
+    justify-content: center;
+}
+
+.pistas-placeholder {
+    width: 110px;
+    flex-shrink: 0;
+}
+
+.perspective-lane {
+    width: 110px; /* Aumentado */
+    height: 380px; /* Aumentado */
+    position: relative;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    flex-shrink: 0;
+}
+
+.lane-track {
+    height: 100%;
+    width: 100%;
+    background: #111;
+    border-radius: 8px;
+    position: relative;
+    transform: rotateX(20deg); /* Angulo um pouco mais suave */
+    transform-origin: bottom;
+    border: 2px solid rgba(255, 255, 255, 0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.track-wood {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, 
+        rgba(101, 67, 33, 0.15) 0%, 
+        rgba(139, 94, 60, 0.05) 100%
+    );
+    opacity: 0.4;
+}
+
+.pin-deck {
+    height: 70px;
+    background: #050505;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid rgba(255,255,255,0.05);
+}
+
+.pins {
+    color: white;
+    font-size: 1.4rem;
+    letter-spacing: 6px;
+    opacity: 0.4;
+}
+
+.perspective-lane.active .lane-track {
+    border-color: var(--primary);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+    background: #1a1a1a;
+}
+
+.perspective-lane.active .pins {
+    color: var(--primary);
+    text-shadow: 0 0 15px var(--primary);
+    opacity: 0.9;
+}
+
+.lane-info-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    padding: 30px 4px;
+}
+
+.lane-num {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 3.5rem;
+    color: white;
+    opacity: 0.1;
+    transition: all 0.3s ease;
+}
+
+.perspective-lane:hover .lane-num {
+    opacity: 0.3;
+    transform: scale(1.1);
+}
+
+.perspective-lane.active .lane-num {
+    color: var(--primary);
+    opacity: 0.2;
+}
+
+.pistas-alley-spacer {
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.03) 50%, 
+        transparent 100%
+    );
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+}
+
+.lane-track {
+    height: 100%;
+    width: 100%;
+    background: #1a1a1a;
+    border-radius: 4px;
+    position: relative;
+    transform: rotateX(25deg);
+    transform-origin: bottom;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.track-wood {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, 
+        rgba(101, 67, 33, 0.2) 0%, 
+        rgba(139, 94, 60, 0.1) 100%
+    );
+    opacity: 0.3;
+}
+
+.pin-deck {
+    height: 60px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.pins {
+    color: white;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    opacity: 0.6;
+}
+
+.perspective-lane.active .lane-track {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.perspective-lane.active .pins {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
+}
+
+.lane-info-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 4px;
+}
+
+.lane-num {
+    font-family: 'Impact', sans-serif;
+    font-size: 2.5rem;
+    opacity: 0.2;
+    margin-bottom: auto;
+}
+
+.perspective-lane .lane-content {
+    margin-top: auto;
+    gap: 4px;
+}
+
+.perspective-lane .lane-comanda {
+    font-size: 1.1rem;
+}
+
+.perspective-lane .lane-timer {
+    font-size: 0.8rem;
+}
+
+.perspective-lane:hover {
+    transform: translateY(-10px);
+}
+
+.perspective-lane:hover .lane-track {
+    background: #222;
+    border-color: rgba(255,255,255,0.2);
 }
 
 .map-layout {
@@ -128,7 +423,7 @@
 }
 
 .map-lane.reserved {
-    background-color: rgba(14, 165, 233, 0.04);
+    background-color: rgba(161, 161, 170, 0.04);
     border-color: var(--status-reserved);
 }
 
@@ -184,7 +479,7 @@
     font-size: 1.2rem;
     font-weight: 800;
     color: var(--status-reserved);
-    text-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .lane-res-name {

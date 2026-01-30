@@ -1,47 +1,58 @@
 .upcoming-reservations-section {
-    margin-bottom: 0px;
-    padding: 0;
+    background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .section-title-mini {
     font-size: 0.75rem;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: rgba(255, 255, 255, 0.4);
-    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
 }
 
 .reservations-scroll {
     display: flex;
-    gap: 1rem;
+    gap: 12px;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
-}
-
-.reservations-scroll::-webkit-scrollbar {
-    height: 4px;
-}
-
-.reservations-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.reservations-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    padding-bottom: 4px;
+    flex: 1;
 }
 
 .res-mini-card {
-    min-width: 180px;
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 160px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 0.75rem;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 4px;
     transition: all 0.2s ease;
     flex-shrink: 0;
+}
+
+.res-mini-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.empty-reservations {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    opacity: 0.6;
 }
 
 .res-mini-card.urgent {

@@ -34,13 +34,15 @@ const UpcomingReservations: React.FC<{ onCheckIn: (resId: string) => void }> = (
             .sort((a, b) => a.startTime - b.startTime);
     }, [reservations, now]);
 
-    if (upcoming.length === 0) return null;
-
     return (
         <div className="upcoming-reservations-section">
             <h3 className="section-title-mini">Reservas Próximas</h3>
             <div className="reservations-scroll">
-                {upcoming.map(res => {
+                {upcoming.length === 0 ? (
+                    <div className="empty-reservations">
+                        Sem reservas para as próximas horas
+                    </div>
+                ) : upcoming.map(res => {
                     const lane = lanes.find(l => l.id === res.laneId);
                     const nowMs = now;
                     const startTime = res.startTime;

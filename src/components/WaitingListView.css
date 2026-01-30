@@ -75,7 +75,7 @@
 
 .primary-btn-submit {
     background-color: var(--primary);
-    color: #000;
+    color: var(--text-on-primary);
     border: none;
     padding: 18px;
     border-radius: 12px;
@@ -84,7 +84,7 @@
     letter-spacing: 0.1em;
     cursor: pointer;
     transition: var(--transition-base);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+    box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .primary-btn-submit:hover {

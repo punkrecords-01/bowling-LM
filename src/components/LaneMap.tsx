@@ -86,101 +86,70 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
     };
 
     return (
-        <div className="lane-map-container fade-in">
-            <div className="map-legend">
-                <div className="legend-item"><span className="dot free"></span> Livre</div>
-                <div className="legend-item"><span className="dot active"></span> Jogando</div>
-                <div className="legend-item"><span className="dot reserved"></span> Reservada</div>
-                <div className="legend-item"><span className="dot maintenance"></span> Manutenção</div>
+        <div className="lane-map-container fade-in mode-pistas">
+            <div className="map-header">
+                <div className="map-legend">
+                    <div className="legend-item"><span className="dot free"></span> Livre</div>
+                    <div className="legend-item"><span className="dot active"></span> Jogando</div>
+                    <div className="legend-item"><span className="dot reserved"></span> Reservada</div>
+                    <div className="legend-item"><span className="dot maintenance"></span> Manutenção</div>
+                </div>
             </div>
 
-            <div className="map-layout">
-                {/* TOP ROW: Lanes 3-10 in 4 pairs */}
-                <div className="lane-row top">
-                    {[
-                        [lanes[2], lanes[3]],
-                        [lanes[4], lanes[5]],
-                        [lanes[6], lanes[7]],
-                        [lanes[8], lanes[9]]
-                    ].map((pair, pIdx) => (
-                        <React.Fragment key={pIdx}>
-                            <div className="lane-pair">
-                                {pair.map(lane => {
-                                    const directRes = reservations
-                                        .filter(r => r.laneId === lane.id && (r.status === 'pending' || r.status === 'arrived'))
-                                        .sort((a, b) => a.startTime - b.startTime)[0];
-                                    const unassignedPool = reservations
-                                        .filter(r => !r.laneId && (r.status === 'pending' || r.status === 'arrived'))
-                                        .sort((a, b) => a.startTime - b.startTime);
-                                    const freeLanes = lanes.filter(l => l.status === 'free');
-                                    const myFreeIndex = freeLanes.findIndex(l => l.id === lane.id);
-                                    const nextRes = directRes || (myFreeIndex !== -1 && unassignedPool[myFreeIndex]);
-
-                                    const isSameDay = nextRes && toLocalDateISO(nextRes.startTime) === toLocalDateISO(now);
-                                    const isReservedSoon = nextRes && isSameDay && (nextRes.startTime - now < 10 * 60000);
-                                    let effectiveStatus = lane.status;
-                                    if (lane.status === 'reserved') {
-                                        const hasDirectToday = !!directRes && toLocalDateISO(directRes.startTime) === toLocalDateISO(now);
-                                        effectiveStatus = hasDirectToday ? 'reserved' : 'free';
-                                    }
-                                    if (lane.status === 'free' && isReservedSoon) effectiveStatus = 'reserved';
-
-                                    return (
-                                        <div key={lane.id} className={`map-lane ${effectiveStatus}`} onClick={() => onLaneClick(lane.id)} style={{ cursor: 'pointer' }}>
-                                            <div className="lane-number-bg">{lane.name.split(' ')[1]}</div>
-                                            {renderLaneContent(lane)}
-                                            <div className="lane-surface"></div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            {pIdx < 3 && <div className="pair-spacer"></div>}
-                        </React.Fragment>
-                    ))}
-                </div>
-
-                <div className="map-alley-center">
-                    <span className="alley-text">ÁREA DE CIRCULAÇÃO / LOUNGE</span>
-                </div>
-
-                {/* BOTTOM ROW: Lanes 1-2 in 1 pair + placeholders */}
-                <div className="lane-row bottom">
-                    <div className="lane-pair">
-                        {[lanes[0], lanes[1]].map(lane => {
-                            const directRes = reservations
-                                .filter(r => r.laneId === lane.id && (r.status === 'pending' || r.status === 'arrived'))
-                                .sort((a, b) => a.startTime - b.startTime)[0];
-                            const unassignedPool = reservations
-                                .filter(r => !r.laneId && (r.status === 'pending' || r.status === 'arrived'))
-                                .sort((a, b) => a.startTime - b.startTime);
-                            const freeLanes = lanes.filter(l => l.status === 'free');
-                            const myFreeIndex = freeLanes.findIndex(l => l.id === lane.id);
-                            const nextRes = directRes || (myFreeIndex !== -1 && unassignedPool[myFreeIndex]);
-
-                            const isSameDay = nextRes && toLocalDateISO(nextRes.startTime) === toLocalDateISO(now);
-                            const isReservedSoon = nextRes && isSameDay && (nextRes.startTime - now < 10 * 60000);
-                            let effectiveStatus = lane.status;
-                            if (lane.status === 'reserved') {
-                                const hasDirectToday = !!directRes && toLocalDateISO(directRes.startTime) === toLocalDateISO(now);
-                                effectiveStatus = hasDirectToday ? 'reserved' : 'free';
-                            }
-                            if (lane.status === 'free' && isReservedSoon) effectiveStatus = 'reserved';
-
+            <div className="pistas-layout">
+                <div className="pistas-rows-group">
+                    {/* Linhas 3-10 */}
+                    <div className="pistas-container top-row">
+                        {lanes.slice(2, 10).map(lane => {
+                            const num = lane.name.split(' ')[1];
                             return (
-                                <div key={lane.id} className={`map-lane ${effectiveStatus}`} onClick={() => onLaneClick(lane.id)} style={{ cursor: 'pointer' }}>
-                                    <div className="lane-number-bg">{lane.name.split(' ')[1]}</div>
-                                    {renderLaneContent(lane)}
-                                    <div className="lane-surface"></div>
+                                <div key={lane.id} className={`perspective-lane ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
+                                    <div className="lane-track">
+                                        <div className="pin-deck">
+                                            <div className="pins">{'·'.repeat(3)}</div>
+                                        </div>
+                                        <div className="track-wood"></div>
+                                        <div className="lane-info-overlay">
+                                            <span className="lane-num">{num}</span>
+                                            {renderLaneContent(lane)}
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         })}
                     </div>
-                    <div className="pair-spacer"></div>
-                    <div className="lane-pair-placeholder"></div>
-                    <div className="pair-spacer"></div>
-                    <div className="lane-pair-placeholder"></div>
-                    <div className="pair-spacer"></div>
-                    <div className="lane-pair-placeholder"></div>
+
+                    <div className="pistas-alley-spacer">
+                        <span className="alley-text">ÁREA DE CIRCULAÇÃO / LOUNGE</span>
+                    </div>
+
+                    {/* Linhas 1-2 (Alinhadas abaixo da 3 e 4) */}
+                    <div className="pistas-container bottom-row">
+                        {lanes.slice(0, 2).map(lane => {
+                            const num = lane.name.split(' ')[1];
+                            return (
+                                <div key={lane.id} className={`perspective-lane ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
+                                    <div className="lane-track">
+                                        <div className="pin-deck">
+                                            <div className="pins">{'·'.repeat(3)}</div>
+                                        </div>
+                                        <div className="track-wood"></div>
+                                        <div className="lane-info-overlay">
+                                            <span className="lane-num">{num}</span>
+                                            {renderLaneContent(lane)}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        {/* Placeholders para manter o alinhamento com as pistas de cima (3 a 10) */}
+                        <div className="pistas-placeholder"></div>
+                        <div className="pistas-placeholder"></div>
+                        <div className="pistas-placeholder"></div>
+                        <div className="pistas-placeholder"></div>
+                        <div className="pistas-placeholder"></div>
+                        <div className="pistas-placeholder"></div>
+                    </div>
                 </div>
             </div>
 

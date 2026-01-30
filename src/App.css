@@ -7,7 +7,7 @@
 
 .app-header {
   height: 80px;
-  background-color: rgba(15, 23, 42, 0.4);
+  background-color: rgba(9, 9, 11, 0.4);
   border-bottom: 1px solid var(--border-color);
   backdrop-filter: var(--glass-blur);
   display: flex;
@@ -124,10 +124,10 @@
 
 .dashboard-top-row {
   display: grid;
-  grid-template-columns: 460px 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-  align-items: end;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
+  align-items: stretch;
 }
 
 .section-header {
@@ -160,116 +160,130 @@
 
 .lane-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
 .lane-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 24px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  transition: var(--transition-base);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  min-height: 180px;
+  color: var(--text-main);
+}
+
+.lane-card.active { 
+  background: linear-gradient(135deg, rgba(254, 240, 138, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border-color: rgba(254, 240, 138, 0.1);
+}
+
+.lane-card.free { 
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.05) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(52, 211, 153, 0.1);
+}
+
+.lane-card.reserved { 
+  background: linear-gradient(135deg, rgba(161, 161, 170, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(161, 161, 170, 0.2);
+}
+
+.lane-card.maintenance { 
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.lane-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
 .lane-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  opacity: 0;
-  transition: var(--transition-base);
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  z-index: 3;
 }
 
-.lane-card {
-  background: var(--bg-card);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  position: relative;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  overflow: hidden;
-}
-
-.lane-card.active {
-  border-color: rgba(14, 165, 233, 0.5);
-  background-color: rgba(14, 165, 233, 0.08);
-}
+.lane-card.active::before { background: var(--status-active); box-shadow: 0 0 12px var(--status-active); }
+.lane-card.free::before { background: var(--status-free); box-shadow: 0 0 12px var(--status-free); }
+.lane-card.reserved::before { background: var(--status-reserved); }
+.lane-card.maintenance::before { background: var(--status-error); }
 
 .lane-header-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  z-index: 2;
+}
+
+.lane-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .small-lane-label {
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.1);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.active .small-lane-label { 
+  background: rgba(254, 240, 138, 0.05); 
+  color: var(--status-active); 
+  border: 1px solid rgba(254, 240, 138, 0.1);
+}
+.free .small-lane-label { 
+  background: rgba(52, 211, 153, 0.05); 
+  color: var(--status-free);
+  border: 1px solid rgba(52, 211, 153, 0.1);
 }
 
 .lane-number {
-  font-size: 3.5rem;
-  font-weight: 900;
-  color: white;
-  opacity: 0.07;
-  line-height: 0.8;
-  font-family: 'Impact', 'Arial Black', sans-serif;
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  transition: all 0.3s ease;
-  pointer-events: none;
+  display: none;
 }
 
-.lane-card:hover .lane-number {
-  opacity: 0.15;
-  transform: scale(1.1);
-}
-
-.lane-card.active .lane-number {
-  color: var(--primary);
-  opacity: 0.1;
+.paused-state-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--status-warning);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .lane-body {
-  margin-top: 4px;
-}
-
-.comanda-display {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-
-.comanda-label {
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: var(--primary);
-  opacity: 0.8;
-  text-transform: uppercase;
-}
-
-.comanda-number {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: white;
-  line-height: 1;
+  justify-content: center;
+  gap: 8px;
 }
 
 .session-info {
@@ -278,40 +292,201 @@
   gap: 12px;
 }
 
-.opened-by {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  letter-spacing: normal;
-  margin-top: 4px;
+.comanda-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
 }
 
-.time {
-  font-size: 2.2rem;
+.comanda-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.comanda-number {
+  font-size: 1.2rem;
   font-weight: 700;
+  color: var(--text-main);
+}
+
+.timer-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.timer-wrapper .time {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text-main);
   font-variant-numeric: tabular-nums;
-  color: white;
   line-height: 1;
 }
-  color: var(--text-main);
-  letter-spacing: -0.03em;
+
+.opened-by-mini {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.opened-by-mini {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 0px;
+}
+
+.free-state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
 
 .status-text {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: none;
-  /* Easier to read */
-  letter-spacing: normal;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
-.lane-hover-overlay {
+.next-res-hint {
+  font-size: 0.8rem;
+  color: var(--status-reserved);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.maintenance-state-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.maintenance-icon-wrapper {
+  color: var(--status-error);
+  opacity: 0.8;
+}
+
+.maintenance-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.maintenance-title {
+  color: var(--status-error);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.maintenance-desc {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.lane-footer {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+
+.lane-action-main {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lane-action-main.free {
+  background: var(--status-free);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.lane-action-main.free:hover {
+  background: #10b981;
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.lane-action-main.active {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.lane-action-main.active:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.lane-action-main.maintenance-active {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--status-error);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.lane-action-tool {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lane-action-tool:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+
+.lane-progress-indicator {
   display: none;
-  /* Removing hover overlay popup to reduce clutter */
+}
+
+.lane-progress-fill {
+  display: none;
+}
+
+.lane-card.paused .lane-progress-fill {
+  display: none;
+}
+
+.lane-card.reserved .lane-progress-indicator {
+  display: none;
+}
+
+/* Animations */
+
+@keyframes blink-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .maintenance-mini-alert {
-  background: var(--status-danger);
+  background: var(--status-error);
   color: white;
   font-size: 0.6rem;
   font-weight: 900;
@@ -321,8 +496,9 @@
   animation: blink-red 1s infinite;
 }
 
-@keyframes blink-red {
-  0%, 100% { opacity: 1; }
+.lane-hover-overlay {
+  display: none;
+}
   50% { opacity: 0.5; }
 }
 
@@ -335,139 +511,62 @@
 
 .maintenance-state-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  height: 100%;
-  padding: 10px 0;
+  gap: 12px;
+  width: 100%;
 }
 
 .maintenance-icon-wrapper {
   color: var(--status-error);
-  /* Uses variable */
-  opacity: 0.9;
-  /* Removed heavy drop shadow and animation for cleaner look */
+  opacity: 0.8;
 }
-
-/* Removed float-alert animation */
 
 .maintenance-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
+  text-align: left;
 }
 
 .maintenance-title {
   color: var(--status-error);
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
+  font-weight: 800;
+  font-size: 0.75rem;
   text-transform: uppercase;
 }
 
 .maintenance-desc {
   color: var(--text-muted);
-  font-size: 0.85rem;
-  background: transparent;
-  /* Removed box */
-  border: none;
+  font-size: 0.75rem;
   font-style: italic;
-}
-
-/* Paused State Styles */
-.lane-card.paused {
-  border-color: var(--status-warning);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .paused-state-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   color: var(--status-warning);
-  font-weight: 600;
-  font-size: 0.8rem;
-  margin-top: 12px;
-  background: transparent;
-  /* Removed blocky background */
-  padding: 0;
-  box-shadow: none;
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
 }
 
-/* Removed pulse-warning */
-
-.lane-footer {
-  display: flex;
-  gap: 12px;
-  padding: 0 20px 20px 20px;
-  /* Moved inside padding */
-  background: transparent;
-  /* Removed footer distinction */
-  border-top: none;
-  /* Unified card */
-  margin-top: auto;
-}
-
-.lane-action-main {
-  flex: 1;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  /* Consistent font */
-  text-transform: none;
-  /* Remove shouting caps */
-  letter-spacing: normal;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lane-action-main.active {
-  background: rgba(248, 113, 113, 0.1);
-  color: var(--status-error);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-}
-
-.lane-action-main.active:hover {
-  background: var(--status-error);
-  color: var(--text-on-primary);
-}
-
-.lane-action-main.free {
-  background: var(--primary);
-  color: var(--text-on-primary);
-  border: 1px solid transparent;
-  box-shadow: 0 4px 15px var(--primary-glow);
-}
-
-.lane-action-main.free:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-  box-shadow: 0 8px 20px var(--primary-glow);
-}
-
-.lane-action-main.reserved {
-  background: var(--status-reserved);
-  color: #fff;
+.lane-card.paused {
+  border-color: var(--status-warning);
 }
 
 .lane-action-main.maintenance-active {
   background: rgba(239, 68, 68, 0.1);
   color: var(--status-error);
-  border: 1px solid var(--status-error);
-  width: 100%;
-  /* No pulse */
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .lane-action-main.maintenance-active:hover {
   background: var(--status-error);
-  color: #fff;
+  color: white;
 }
 
 .lane-action-tool {
