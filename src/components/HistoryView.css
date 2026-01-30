@@ -38,6 +38,10 @@
     cursor: pointer;
 }
 
+.history-date-filter {
+    width: 200px;
+}
+
 .filter-tabs {
     display: flex;
     gap: 8px;

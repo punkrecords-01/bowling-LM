@@ -66,14 +66,11 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
         const isReservedSoon = nextRes && (nextRes.startTime - now < WINDOW_MS);
 
         if (isReservedSoon || lane.status === 'reserved') {
-            if (nextRes) {
-                return (
-                    <div className="lane-content reserved">
-                        <span className="lane-res-time">{new Date(nextRes.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        <span className="lane-res-name">{nextRes.customerName}</span>
-                    </div>
-                );
-            }
+            return (
+                <div className="lane-content reserved">
+                    <span className="lane-status-text">RESERVADA</span>
+                </div>
+            );
         }
 
         if (lane.status === 'maintenance') {
@@ -130,7 +127,7 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
 
                                     return (
                                         <div key={lane.id} className={`map-lane ${effectiveStatus}`} onClick={() => onLaneClick(lane.id)} style={{ cursor: 'pointer' }}>
-                                            <span className="lane-label">{lane.name.split(' ')[1]}</span>
+                                            <div className="lane-number-bg">{lane.name.split(' ')[1]}</div>
                                             {renderLaneContent(lane)}
                                             <div className="lane-surface"></div>
                                         </div>
@@ -171,9 +168,9 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
 
                             return (
                                 <div key={lane.id} className={`map-lane ${effectiveStatus}`} onClick={() => onLaneClick(lane.id)} style={{ cursor: 'pointer' }}>
-                                    <div className="lane-surface"></div>
+                                    <div className="lane-number-bg">{lane.name.split(' ')[1]}</div>
                                     {renderLaneContent(lane)}
-                                    <span className="lane-label">{lane.name.split(' ')[1]}</span>
+                                    <div className="lane-surface"></div>
                                 </div>
                             );
                         })}

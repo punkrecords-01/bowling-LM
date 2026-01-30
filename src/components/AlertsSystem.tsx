@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanes } from '../context/LaneContext';
+import { AlertTriangleIcon } from './Icons';
 import './AlertsSystem.css';
 
 const AlertsSystem: React.FC = () => {
@@ -11,21 +12,18 @@ const AlertsSystem: React.FC = () => {
             const newAlerts: string[] = [];
             const now = Date.now();
 
-            // 1. Check upcoming reservations (next 20 mins)
+            // 1. Check upcoming reservations (next 15 mins) - Reduced window for criticality
             reservations.forEach(res => {
                 const diff = (res.startTime - now) / 60000;
-                if (diff > 0 && diff <= 20 && res.status === 'pending') {
-                    newAlerts.push(`Reserva próxima: ${res.customerName} em 20 min`);
+                if (diff > 0 && diff <= 15 && res.status === 'pending') {
+                    newAlerts.push(`Urgente: Reserva de ${res.customerName} em ${Math.round(diff)} min`);
                 }
             });
 
-            // 2. Check long active sessions (> 2h)
-            sessions.filter(s => s.isActive).forEach(s => {
-                const diff = (now - s.startTime) / 3600000;
-                if (diff >= 2) {
-                    const lane = lanes.find(l => l.id === s.laneId);
-                    newAlerts.push(`Sessão Longa: ${lane?.name} ativa há 2h+`);
-                }
+            // 2. Check delayed reservations (persistent with time)
+            reservations.filter(r => r.status === 'delayed').forEach(r => {
+                const minsLate = Math.floor((now - r.startTime) / 60000);
+                newAlerts.push(`Atraso: ${r.customerName} (${minsLate} min total)`);
             });
 
             setAlerts(newAlerts);
@@ -41,9 +39,11 @@ const AlertsSystem: React.FC = () => {
 
     return (
         <div className="alerts-container">
-            {alerts.map((alert, i) => (
+            {alerts.slice(0, 3).map((alert, i) => ( // Show max 3 recent alerts
                 <div key={i} className="alert-item">
-                    <span className="alert-icon">⚠️</span>
+                    <div className="alert-icon">
+                        <AlertTriangleIcon width={18} height={18} />
+                    </div>
                     <span className="alert-text">{alert}</span>
                 </div>
             ))}

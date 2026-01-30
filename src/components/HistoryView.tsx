@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLanes } from '../context/LaneContext';
 import { LogEntry } from '../types';
 import ReceiptView from './ReceiptView';
+import CustomDatePicker from './CustomDatePicker';
 import './HistoryView.css';
 
 const HistoryView: React.FC = () => {
@@ -82,11 +83,10 @@ const HistoryView: React.FC = () => {
                         onChange={e => setSearchTerm(e.target.value)}
                         className="search-input"
                     />
-                    <input
-                        type="date"
+                    <CustomDatePicker
                         value={selectedDate}
-                        onChange={e => setSelectedDate(e.target.value)}
-                        className="date-picker"
+                        onChange={setSelectedDate}
+                        className="history-date-filter"
                     />
                 </div>
                 <div className="filter-tabs">

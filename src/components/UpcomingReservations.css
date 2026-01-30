@@ -1,0 +1,170 @@
+.upcoming-reservations-section {
+    margin-bottom: 0px;
+    padding: 0;
+}
+
+.section-title-mini {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 0.5rem;
+}
+
+.reservations-scroll {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.reservations-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+
+.reservations-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.reservations-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.res-mini-card {
+    min-width: 180px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.res-mini-card.urgent {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
+.res-mini-card.arrived {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.res-mini-card.is-delayed-alert {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    animation: pulse-red 2s infinite;
+}
+
+.res-mini-card.delayed-confirmed {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.is-delayed-alert .res-mini-time {
+    color: #ef4444;
+}
+
+.delayed-confirmed .res-mini-time {
+    color: #f59e0b;
+}
+
+.res-mini-time {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+.arrived .res-mini-time {
+    color: #10b981;
+}
+
+.res-mini-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.res-mini-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.res-mini-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.res-mini-lane {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.res-mini-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.delayed-decision-group {
+    display: flex;
+    gap: 4px;
+}
+
+.res-status-btn {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.res-status-btn:hover {
+    background: #10b981;
+    color: white;
+}
+
+.res-status-btn.delay-keep {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+}
+
+.res-status-btn.delay-keep:hover {
+    background: #f59e0b;
+    color: white;
+}
+
+.res-status-btn.no-show {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+.res-status-btn.no-show:hover {
+    background: #ef4444;
+    color: white;
+}

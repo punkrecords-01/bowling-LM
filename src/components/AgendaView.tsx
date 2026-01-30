@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLanes } from '../context/LaneContext';
 import ComandaModal from './ComandaModal';
+import CustomDatePicker from './CustomDatePicker';
+import CustomTimePicker from './CustomTimePicker';
 import './AgendaView.css';
 
 const AgendaView: React.FC = () => {
@@ -58,7 +60,7 @@ const AgendaView: React.FC = () => {
     const getStatusLabel = (status: string) => {
         switch (status) {
             case 'pending': return 'Aguardando';
-            case 'arrived': return 'Chegou';
+            case 'arrived': return 'Check-in';
             case 'delayed': return 'Atrasada';
             case 'no-show': return 'No-show';
             case 'cancelled': return 'Cancelada';
@@ -71,22 +73,20 @@ const AgendaView: React.FC = () => {
         <section className="agenda-view fade-in">
             <header className="section-header">
                 <div>
-                    <h2>Agenda de Reservas</h2>
-                    <p className="subtitle">Gestão operacional de reservas</p>
+                    <h2>Gestão de Reservas</h2>
+                    <p className="subtitle">Visualização e agendamento</p>
                 </div>
                 <div className="header-actions">
                     <div className="filter-group">
-                        <input 
-                            type="date" 
-                            className="date-filter"
+                        <CustomDatePicker 
                             value={dateFilter} 
-                            onChange={e => setDateFilter(e.target.value)} 
+                            onChange={setDateFilter} 
+                            className="agenda-date-filter"
                         />
                         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
                             <option value="all">Todos os Status</option>
                             <option value="pending">Aguardando</option>
-                            <option value="arrived">Chegou</option>
-                            <option value="delayed">Atrasada</option>
+                            <option value="arrived">Check-in</option>
                             <option value="no-show">No-show</option>
                             <option value="fulfilled">Iniciadas</option>
                         </select>
@@ -126,22 +126,18 @@ const AgendaView: React.FC = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Data</label>
-                            <input
-                                type="date"
+                            <CustomDatePicker
+                                label="Data"
                                 value={date}
-                                onChange={e => setDate(e.target.value)}
-                                required
+                                onChange={setDate}
                             />
                         </div>
 
                         <div className="form-group">
-                            <label>Horário</label>
-                            <input
-                                type="time"
+                            <CustomTimePicker
+                                label="Horário"
                                 value={time}
-                                onChange={e => setTime(e.target.value)}
-                                required
+                                onChange={setTime}
                             />
                         </div>
 

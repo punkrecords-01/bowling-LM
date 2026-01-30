@@ -1,62 +1,53 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap');
 
 :root {
-  /* Colors - Strike Boliche Bar (Industrial Premium) */
-  --bg-dark: #050505;
-  /* Softened from pure black for depth */
-  --bg-surface: #0f0f0f;
-  /* Elevated surface */
-  --bg-card: #141414;
-  /* Standard card */
-  --bg-card-hover: #1c1c1c;
+  /* Colors - Midnight Oceanic Glass (Deep, Calm, Professional) */
+  --bg-dark: #020617;        /* Slate 950 */
+  --bg-surface: rgba(15, 23, 42, 0.6); 
+  --bg-card: rgba(30, 41, 59, 0.4); 
+  --bg-card-hover: rgba(51, 65, 85, 0.5);
 
-  --primary: #FFD700;
-  /* Strike Gold */
-  --primary-glow: rgba(255, 215, 0, 0.2);
-  --secondary: #FFFFFF;
+  --primary: #0ea5e9;        /* Sky 500 - Pure & Professional */
+  --primary-glow: rgba(14, 165, 233, 0.25);
+  --secondary: #64748b;      /* Slate 500 */
 
-  /* Status Colors */
-  --status-free: #10b981;
-  /* Emerald Green */
-  --status-active: #FFD700;
-  --status-reserved: #0ea5e9;
-  --status-warning: #f59e0b;
-  --status-error: #ef4444;
+  /* Status Colors (Oceanic Palette) */
+  --status-free: #10b981;    /* Emerald 500 */
+  --status-active: #0ea5e9;  /* match primary */
+  --status-reserved: #6366f1; /* Indigo 500 */
+  --status-warning: #f59e0b; /* Amber 500 */
+  --status-error: #ef4444;   /* Red 500 */
 
-  /* Text - High Contrast for Readability */
-  --text-main: #FFFFFF;
-  --text-muted: #A0A0A0;
-  /* Improved from #666666 for better contrast on black */
-  --text-on-primary: #000000;
+  /* Text - Optimax */
+  --text-main: #f1f5f9;      /* Slate 100 */
+  --text-muted: #94a3b8;     /* Slate 400 */
+  --text-on-primary: #ffffff;
 
-  /* Borders & Dividers */
+  /* Glass Borders */
   --border-color: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.15);
-  --border-glow: rgba(255, 215, 0, 0.4);
+  --border-glow: rgba(192, 132, 252, 0.4);
 
-  /* Optimization - Transition speeds */
-  --transition-fast: 0.1s ease;
-  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass-blur: blur(12px);
+  --transition-base: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   background-color: var(--bg-dark);
-  /* Clean, subtle gradient without the distracting grid */
-  background-image:
-    radial-gradient(circle at 0% 0%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(255, 215, 0, 0.02) 0%, transparent 50%);
+  background-image: 
+    radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
   color: var(--text-main);
   overflow: hidden;
-  user-select: none;
+  min-height: 100vh;
 }
 
 h1,

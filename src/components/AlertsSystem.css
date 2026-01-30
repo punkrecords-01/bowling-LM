@@ -1,9 +1,13 @@
 .alerts-container {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
     display: flex;
+    flex-direction: column;
     gap: 12px;
-    overflow-x: auto;
-    padding: 4px 0;
-    scrollbar-width: none;
+    z-index: 1000;
+    pointer-events: none;
+    max-width: 400px;
 }
 
 .alerts-container::-webkit-scrollbar {
@@ -11,27 +15,31 @@
 }
 
 .alert-item {
-    background-color: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.2);
-    border-radius: 8px;
-    padding: 8px 16px;
+    pointer-events: auto;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--status-warning);
+    border-radius: 12px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-    animation: slideIn 0.3s ease-out;
+    gap: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(12px);
 }
 
 .alert-icon {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
 }
 
 .alert-text {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #f59e0b;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+    line-height: 1.4;
 }
 
 @keyframes slideIn {
