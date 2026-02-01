@@ -3,7 +3,7 @@ import './App.css';
 import { useLanes } from './context/LaneContext';
 import Timer from './components/Timer';
 import SummaryModal from './components/SummaryModal';
-import { Lane, Session, Reservation } from './types';
+import { Lane, Session } from './types';
 import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import CenterInsights from './components/CenterInsights';
@@ -13,13 +13,12 @@ import LaneMap from './components/LaneMap';
 import AlertsSystem from './components/AlertsSystem';
 import OpenLaneModal from './components/OpenLaneModal';
 import ReceiptView from './components/ReceiptView';
-import OpenConfirmationModal from './components/OpenConfirmationModal';
 import CheckInModal from './components/CheckInModal';
 import MaintenanceModal from './components/MaintenanceModal';
 import HistoryView from './components/HistoryView';
 import UpcomingReservations from './components/UpcomingReservations';
 import LaneDetailModal from './components/LaneDetailModal';
-import { SettingsIcon, CheckIcon, WrenchIcon, AlertTriangleIcon } from './components/Icons';
+import { CheckIcon, WrenchIcon, AlertTriangleIcon } from './components/Icons';
 
 function AppContent() {
   const { lanes, sessions, reservations, openLane, closeLane, setMaintenance, clearMaintenance, convertReservationToLane } = useLanes();
@@ -117,6 +116,8 @@ function AppContent() {
           </button>
         </nav>
 
+        <AlertsSystem />
+
         <div className="user-profile" onClick={logout} style={{ cursor: 'pointer' }} title="Clique para sair">
           <div className="user-info">
             <span className="user-name">{user.name}</span>
@@ -125,8 +126,6 @@ function AppContent() {
           <div className="avatar">{user.name[0]}</div>
         </div>
       </header>
-
-      <AlertsSystem />
 
       <main className="app-content">
         {activeTab === 'lanes' && (
@@ -172,23 +171,18 @@ function AppContent() {
                 if (lane.status === 'free' && isReservedSoon) effectiveStatus = 'reserved';
 
                 const isPaused = lane.status === 'active' && lane.isMaintenancePaused;
+                const cardStatus = (lane.status === 'maintenance' || isPaused) ? 'maintenance' : effectiveStatus;
 
                 return (
-                  <div key={lane.id} className={`lane-card ${effectiveStatus} ${isPaused ? 'paused' : ''}`} onClick={() => setDetailLaneId(lane.id)} style={{ cursor: 'pointer' }}>
+                  <div key={lane.id} className={`lane-card ${cardStatus} ${isPaused ? 'active-maintenance' : ''}`} onClick={() => setDetailLaneId(lane.id)} style={{ cursor: 'pointer' }}>
                     <div className="lane-header-top">
                       <div className="lane-badge-group">
                         <span className="small-lane-label">{lane.name.split(' ')[1]}</span>
-                        {isPaused && (
-                          <div className="paused-state-badge">
-                            <WrenchIcon width={10} height={10} />
-                            <span>PAUSADA</span>
-                          </div>
-                        )}
                       </div>
                     </div>
 
                     <div className="lane-body">
-                      {lane.status === 'active' && session ? (
+                      {lane.status === 'active' && session && !lane.isMaintenancePaused ? (
                         <div className="session-info">
                           <div className="comanda-display">
                             <span className="comanda-label">Comanda</span>
@@ -205,15 +199,33 @@ function AppContent() {
                             )}
                           </div>
                         </div>
-                      ) : lane.status === 'maintenance' ? (
+                      ) : (lane.status === 'maintenance' || lane.isMaintenancePaused) ? (
                         <div className="maintenance-state-container">
-                          <div className="maintenance-icon-wrapper">
-                            <AlertTriangleIcon width={32} height={32} />
+                          <div className="maintenance-main-row">
+                            <div className="maintenance-icon-wrapper">
+                              <AlertTriangleIcon width={24} height={24} />
+                            </div>
+                            <div className="maintenance-content">
+                              <span className="maintenance-title">EM MANUTENÇÃO</span>
+                              <span className="maintenance-desc">
+                                {lane.isMaintenancePaused ? "Tempo Pausado" : lane.maintenanceReason}
+                              </span>
+                            </div>
                           </div>
-                          <div className="maintenance-content">
-                            <span className="maintenance-title">EM MANUTENÇÃO</span>
-                            <span className="maintenance-desc">{lane.maintenanceReason}</span>
-                          </div>
+                          {lane.isMaintenancePaused && session && (
+                            <div className="maintenance-session-overlay">
+                              <div className="maintenance-session-info">
+                                <span className="mini-comanda">#{session.comanda}</span>
+                                <div className="mini-timer">
+                                  <Timer 
+                                    startTime={session.startTime} 
+                                    pauseTimeTotal={session.maintenanceTimeTotal} 
+                                    isPaused={true} 
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="free-state-container">
@@ -301,7 +313,7 @@ function AppContent() {
         />
       )}
 
-      {checkingInReservationId && (
+      {checkingInReservationId && reservations.find(r => r.id === checkingInReservationId) && (
         <CheckInModal
           reservation={reservations.find(r => r.id === checkingInReservationId)!}
           onCancel={() => setCheckingInReservationId(null)}

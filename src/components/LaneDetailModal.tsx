@@ -136,8 +136,8 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose }) =>
                     margin-left: 8px;
                     vertical-align: middle;
                 }
-                .status-badge.free { background: var(--status-free); color: white; }
-                .status-badge.active { background: var(--status-active); color: black; }
+                .status-badge.free { background: var(--status-free); color: black; }
+                .status-badge.active { background: var(--status-active); color: white; }
                 .status-badge.reserved { background: var(--status-reserved); color: white; }
                 .status-badge.maintenance { background: var(--status-error); color: white; }
 

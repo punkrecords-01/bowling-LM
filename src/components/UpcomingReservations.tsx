@@ -98,7 +98,7 @@ const UpcomingReservations: React.FC<{ onCheckIn: (resId: string) => void }> = (
                                         onClick={() => onCheckIn(res.id)}
                                         title="Fazer Check-in"
                                     >
-                                        ✓ Check-in
+                                        Check-in
                                     </button>
                                 ) : null}
                             </div>

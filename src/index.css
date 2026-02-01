@@ -8,16 +8,16 @@
   --bg-card: rgba(39, 39, 42, 0.4); 
   --bg-card-hover: rgba(63, 63, 70, 0.5);
 
-  --primary: #fef08a;        /* Yellow 200 - Soft Pastel Yellow */
-  --accent-amber: #fef08a;   
-  --primary-glow: rgba(254, 240, 138, 0.2);
+  --primary: #fde047;        /* Yellow 300 - More saturated, slightly darker */
+  --accent-amber: #fde047;   
+  --primary-glow: rgba(253, 224, 71, 0.2);
   --secondary: #71717a;      
 
   /* Status Colors */
-  --status-free: #34d399;    /* Emerald Mint - Clean & Technical */
-  --status-active: #fef08a;  
+  --status-free: #ffffff;    
+  --status-active: #3b82f6;  
   --status-reserved: #a1a1aa; 
-  --status-warning: #fef08a; 
+  --status-warning: #fde047; 
   --status-error: #ef4444;   
 
   /* Text - Zinc */
@@ -45,8 +45,8 @@
 body {
   background-color: var(--bg-dark);
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(254, 240, 138, 0.04) 0%, transparent 40%),
-    radial-gradient(circle at 90% 90%, rgba(254, 240, 138, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(253, 224, 71, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(253, 224, 71, 0.02) 0%, transparent 40%),
     radial-gradient(circle at 50% 50%, rgba(9, 9, 11, 1) 0%, transparent 100%),
     url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M0 0L80 80M80 0L0 80' stroke='%23ffffff' stroke-width='0.5' stroke-opacity='0.04' /%3E%3Cpath d='M40 0v80M0 40h80' stroke='%23ffffff' stroke-width='0.5' stroke-opacity='0.02' /%3E%3Ccircle cx='40' cy='40' r='1.5' fill='%23ffffff' fill-opacity='0.1' /%3E%3Ccircle cx='0' cy='0' r='1' fill='%23ffffff' fill-opacity='0.05' /%3E%3C/g%3E%3C/svg%3E");
   color: var(--text-main);
@@ -106,28 +106,54 @@ button {
   animation: fadeIn var(--transition-base);
 }
 
-/* Datepicker / time input visual styles (unify appearance across browsers) */
-input[type="date"], input[type="time"], .date-filter, .date-picker {
+/* Datepicker / time input / Select / Text Input visual styles (Global Standardization) */
+input[type="date"], 
+input[type="time"], 
+.date-filter, 
+.date-picker,
+select,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 8px; /* Industrial std radius */
   color: var(--text-main);
   font-family: inherit;
+  font-size: 0.95rem; /* Better readability */
   cursor: pointer;
-  font-weight: 600;
   outline: none;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(12px);
+}
+
+/* Specific cursor for text inputs */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
+  cursor: text;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-clear-button {
-  filter: invert(1) brightness(1.1);
-  opacity: 0.9;
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
 }
 
-input[type="date"]:focus, input[type="time"]:focus, .date-filter:focus, .date-picker:focus {
+input:focus, 
+select:focus,
+textarea:focus, 
+.date-filter:focus, 
+.date-picker:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 6px rgba(255, 215, 0, 0.06);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Matching the blue glow */
+  background-color: var(--bg-surface);
 }
 
 /* Make sure the hidden native parts don't break layout */

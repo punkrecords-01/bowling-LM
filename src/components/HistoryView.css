@@ -9,8 +9,9 @@
     margin-bottom: 24px;
     background: rgba(255, 255, 255, 0.02);
     padding: 20px;
-    border-radius: 16px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
+    backdrop-filter: blur(16px);
 }
 
 .search-group {
@@ -23,16 +24,22 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
     padding: 12px 20px;
-    border-radius: 12px;
+    border-radius: 8px;
     color: white;
     font-size: 0.95rem;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .date-picker {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
     padding: 12px;
-    border-radius: 12px;
+    border-radius: 8px;
     color: white;
     font-family: inherit;
     cursor: pointer;
@@ -52,11 +59,16 @@
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.filter-tab:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
 }
 
 .filter-tab.active {
@@ -68,8 +80,9 @@
 .history-table-wrapper {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 8px;
     overflow: hidden;
+    backdrop-filter: blur(16px);
 }
 
 .history-table {
@@ -95,7 +108,7 @@
 }
 
 .history-row:hover {
-    background: rgba(255, 255, 255, 0.01);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .time-col {

@@ -3,7 +3,6 @@ import './Modal.css';
 import ComandaModal from './ComandaModal';
 import { Reservation } from '../types';
 import { useLanes } from '../context/LaneContext';
-import { CheckIcon, AlertTriangleIcon } from './Icons';
 
 interface CheckInModalProps {
     reservation: Reservation;
@@ -239,7 +238,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                 }
                 .lane-name { font-weight: 700; }
                 .lane-option-status { font-size: 0.75rem; font-weight: 600; }
-                .status-free { color: #10b981; }
+                .status-free { color: var(--status-free); }
                 .status-occupied { color: #ef4444; }
 
                 .dropdown-list::-webkit-scrollbar { width: 6px; }

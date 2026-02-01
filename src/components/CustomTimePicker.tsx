@@ -161,8 +161,8 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     color: rgba(255,255,255,0.6);
                 }
                 .picker-trigger {
-                    background: rgba(15, 23, 42, 0.6);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-color);
                     border-radius: 12px;
                     padding: 0 16px;
                     height: 48px;
@@ -172,21 +172,18 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     align-items: center;
                     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                     color: white;
-                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
                 }
                 .picker-trigger:hover {
-                    border-color: rgba(255, 255, 255, 0.2);
-                    background: rgba(15, 23, 42, 0.8);
+                    border-color: var(--border-strong);
+                    background: var(--bg-card-hover);
                 }
                 .picker-trigger:focus-within {
                     border-color: var(--primary);
-                    background: rgba(15, 23, 42, 0.9);
-                    box-shadow: 0 0 0 1px var(--primary), 0 0 15px rgba(59, 130, 246, 0.2);
+                    background: var(--bg-card-hover);
+                    box-shadow: 0 0 0 1px var(--primary), 0 0 15px rgba(253, 224, 71, 0.2);
                 }
                 .picker-trigger.open {
                     border-color: var(--primary);
-                    border-bottom-left-radius: 0;
-                    border-bottom-right-radius: 0;
                 }
                 /* Reset total para o input interno não herdar estilos globais */
                 input.picker-input-field {
@@ -195,14 +192,14 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     box-shadow: none !important;
                     color: white !important;
                     font-family: inherit !important;
-                    font-size: 1.1rem !important;
-                    font-weight: 700 !important;
+                    font-size: 1rem !important;
+                    font-weight: 600 !important;
                     width: 100% !important;
                     height: 100% !important;
                     outline: none !important;
                     padding: 0 !important;
                     margin: 0 !important;
-                    letter-spacing: 2px !important;
+                    letter-spacing: 1px !important;
                     display: block !important;
                 }
                 .picker-input-field::placeholder {
@@ -218,17 +215,18 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     position: absolute;
                     top: calc(100% + 8px);
                     left: 0;
-                    background: #1e293b;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 16px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                    z-index: 100;
+                    background: #18181b; /* Zinc 900 sólido para evitar transparência excessiva */
+                    border: 1px solid var(--border-strong);
+                    border-radius: 12px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+                    z-index: 1000;
                     padding: 16px;
+                    backdrop-filter: blur(20px);
                 }
 
                 .time-dropdown {
-                    min-width: 180px;
-                    padding: 12px;
+                    min-width: 200px;
+                    padding: 16px;
                 }
                 .time-selector-columns {
                     display: flex;
@@ -246,16 +244,16 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                 .column-label {
                     font-size: 0.65rem;
                     text-align: center;
-                    color: rgba(255,255,255,0.4);
+                    color: var(--text-muted);
                     margin-bottom: 8px;
                     font-weight: 800;
                 }
                 .column-scroll {
                     overflow-y: auto;
                     height: 100%;
-                    border: 1px solid rgba(255,255,255,0.05);
-                    border-radius: 8px;
-                    background: rgba(0,0,0,0.3);
+                    border: 1px solid var(--border-color);
+                    border-radius: 6px;
+                    background: rgba(0,0,0,0.2);
                     scrollbar-width: thin;
                     scrollbar-color: var(--primary) transparent;
                 }
@@ -271,8 +269,8 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     cursor: pointer;
                     font-weight: 500;
                     transition: all 0.1s;
-                    font-size: 1rem;
-                    color: rgba(255,255,255,0.7);
+                    font-size: 0.95rem;
+                    color: var(--text-muted);
                 }
                 .time-unit:hover { 
                     background: rgba(255,255,255,0.05); 
@@ -280,9 +278,9 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                 }
                 .time-unit.selected {
                     background: var(--primary);
-                    color: #000;
+                    color: black;
                     font-weight: 800;
-                    border-radius: 6px;
+                    border-radius: 4px;
                 }
                 
                 .time-divider {
@@ -294,20 +292,25 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
 
                 .time-footer {
                     margin-top: 12px;
-                    border-top: 1px solid rgba(255,255,255,0.1);
+                    border-top: 1px solid var(--border-color);
                     padding-top: 12px;
                 }
                 .confirm-time-btn {
                     width: 100%;
-                    padding: 10px;
+                    padding: 12px;
                     background: var(--primary);
                     border: none;
-                    color: #000;
+                    color: black;
                     border-radius: 8px;
-                    font-weight: 800;
+                    font-weight: 900;
                     cursor: pointer;
                     text-transform: uppercase;
-                    font-size: 0.75rem;
+                    font-size: 0.8rem;
+                    transition: all 0.2s;
+                }
+                .confirm-time-btn:hover {
+                    box-shadow: 0 0 15px var(--primary-glow);
+                    transform: translateY(-1px);
                 }
             `}</style>
         </div>

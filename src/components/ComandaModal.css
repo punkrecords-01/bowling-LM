@@ -1,24 +1,33 @@
 .comanda-modal {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 8px;
     padding: 32px;
     width: 400px;
     max-height: 80vh;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(16px);
 }
 
 .comanda-search {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     padding: 12px 20px;
-    border-radius: 10px;
-    color: white;
+    border-radius: 8px; /* Industrial std */
+    color: var(--text-main);
     font-size: 1.2rem;
     font-weight: 700;
     text-align: center;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.comanda-search:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .comanda-grid {
@@ -33,15 +42,29 @@
     padding-right: 8px;
 }
 
+/* Custom Scrollbar */
+.comanda-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.comanda-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.comanda-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
 .comanda-btn {
     height: 50px;
     /* Fixed height for consistent look */
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 700;
     font-size: 0.9rem;
-    color: white;
+    color: var(--text-main);
     transition: 0.2s;
     display: flex;
     align-items: center;
@@ -52,6 +75,7 @@
     background-color: var(--primary-glow);
     border-color: var(--primary);
     color: var(--primary);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
 }
 
 .modal-header h3 {

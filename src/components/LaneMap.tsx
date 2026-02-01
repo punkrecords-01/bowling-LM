@@ -10,11 +10,6 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
     const { lanes, sessions, reservations } = useLanes();
     const [now, setNow] = useState(Date.now());
 
-    const toLocalDateISO = (ms:number) => {
-        const d = new Date(ms);
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    };
-
     useEffect(() => {
         const timer = setInterval(() => setNow(Date.now()), 1000);
         return () => clearInterval(timer);

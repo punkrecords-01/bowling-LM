@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ClockIcon } from './Icons';
 
 interface CustomDatePickerProps {
     value: string; // YYYY-MM-DD
@@ -118,9 +117,9 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     color: rgba(255,255,255,0.6);
                 }
                 .picker-trigger {
-                    background: rgba(255, 255, 255, 0.05);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 12px;
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-color);
+                    border-radius: 14px;
                     padding: 12px 16px;
                     cursor: pointer;
                     display: flex;
@@ -128,35 +127,70 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     align-items: center;
                     transition: all 0.2s;
                     color: white;
+                    height: 44px;
                 }
                 .picker-trigger:hover {
-                    border-color: rgba(255, 255, 255, 0.2);
-                    background: rgba(255, 255, 255, 0.08);
+                    border-color: var(--border-strong);
+                    background: var(--bg-card-hover);
                 }
                 .picker-trigger.open {
                     border-color: var(--primary);
-                    background: rgba(255, 255, 255, 0.1);
+                    background: var(--bg-card-hover);
                 }
+
+                /* When used as an inline filter (e.g., in the header), avoid rendering a nested input look
+                   and match the height of the adjacent select so both controls align */
+                .custom-picker-container.agenda-date-filter {
+                    display: inline-flex;
+                    align-items: center;
+                    width: auto;
+                    height: 44px;
+                    border-radius: 14px;
+                }
+                .custom-picker-container.agenda-date-filter .picker-trigger {
+                    /* Let the outer container (.agenda-date-filter) provide the card/bg and border */
+                    background: transparent;
+                    border: none;
+                    padding: 0;
+                    height: 100%;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                }
+                .custom-picker-container.agenda-date-filter .picker-trigger:hover {
+                    background: transparent;
+                    border-color: transparent;
+                }
+                .custom-picker-container.agenda-date-filter .picker-trigger.open {
+                    /* Keep outer border highlight when open */
+                    background: transparent;
+                }
+
                 .picker-value {
-                    font-weight: 500;
+                    font-weight: 600;
                     font-size: 0.95rem;
                 }
                 .picker-icon {
-                    opacity: 0.6;
-                    font-size: 1rem;
+                    opacity: 0.8;
+                    font-size: 1.1rem;
                 }
 
                 .picker-dropdown {
                     position: absolute;
                     top: calc(100% + 8px);
                     left: 0;
-                    background: #1e293b;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 16px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                    z-index: 100;
-                    padding: 16px;
-                    min-width: 280px;
+                    /* Slightly more opaque and warmer so it feels less transparent */
+                    background: rgba(24,24,27,0.96);
+                    border: 1px solid rgba(255,255,255,0.06);
+                    border-radius: 12px;
+                    /* Stronger shadow to separate from backdrop */
+                    box-shadow: 0 18px 50px rgba(0,0,0,0.7);
+                    z-index: 12000;
+                    isolation: isolate;
+                    padding: 20px;
+                    min-width: 300px;
+                    /* keep a mild blur but less intense */
+                    backdrop-filter: blur(6px);
                 }
 
                 .calendar-header {
@@ -167,19 +201,20 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     font-weight: bold;
                 }
                 .calendar-header button {
-                    background: rgba(255,255,255,0.1);
-                    border: none;
+                    background: rgba(255,255,255,0.05);
+                    border: 1px solid var(--border-color);
                     color: white;
                     width: 32px;
                     height: 32px;
-                    border-radius: 8px;
+                    border-radius: 6px;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                 }
                 .calendar-header button:hover {
-                    background: rgba(255,255,255,0.2);
+                    background: rgba(255,255,255,0.1);
+                    border-color: rgba(255,255,255,0.3);
                 }
 
                 .calendar-weekdays {
@@ -188,7 +223,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     text-align: center;
                     font-size: 0.7rem;
                     text-transform: uppercase;
-                    color: rgba(255,255,255,0.4);
+                    color: var(--text-muted);
                     margin-bottom: 8px;
                     font-weight: 800;
                 }
@@ -205,17 +240,19 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     align-items: center;
                     justify-content: center;
                     font-size: 0.9rem;
-                    border-radius: 8px;
+                    border-radius: 4px;
                     cursor: pointer;
                     transition: all 0.15s;
+                    color: var(--text-main);
                 }
                 .calendar-day:hover:not(.empty):not(.selected) {
                     background: rgba(255,255,255,0.1);
                 }
                 .calendar-day.selected {
                     background: var(--primary);
-                    color: white;
+                    color: black;
                     font-weight: bold;
+                    box-shadow: 0 0 10px var(--primary-glow);
                 }
                 .calendar-day.empty {
                     cursor: default;

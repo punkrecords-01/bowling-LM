@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useLanes } from '../context/LaneContext';
-import ComandaModal from './ComandaModal';
+import ResToLaneModal from './ResToLaneModal';
 import CustomDatePicker from './CustomDatePicker';
 import CustomTimePicker from './CustomTimePicker';
+import { ClockIcon, UserIcon, CheckIcon, PlayIcon } from './Icons';
 import './AgendaView.css';
 
 const AgendaView: React.FC = () => {
@@ -154,9 +155,10 @@ const AgendaView: React.FC = () => {
             )}
 
             {convertingResId && (
-                <ComandaModal
-                    onSelect={(num) => {
-                        convertReservationToLane(convertingResId, num);
+                <ResToLaneModal
+                    reservationId={convertingResId}
+                    onConfirm={(laneId, comanda) => {
+                        convertReservationToLane(convertingResId, comanda, laneId);
                         setConvertingResId(null);
                     }}
                     onClose={() => setConvertingResId(null)}
@@ -176,47 +178,56 @@ const AgendaView: React.FC = () => {
 
                         return (
                             <div key={res.id} className={`reservation-item ${res.status}`}>
-                                <div className="res-time">
-                                    {new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </div>
-                                <div className="res-main">
-                                    <div className="res-info">
-                                        <span className="customer">{res.customerName}</span>
-                                        <span className="lane-tag">{lane?.name || 'Qualquer Pista'}</span>
-                                    </div>
-                                    <div className="res-status">
-                                        <span className={`status-pill ${res.status}`}>
-                                            {getStatusLabel(res.status)}
+                                <div className="res-time-section">
+                                    <div className="res-time-wrapper">
+                                        <ClockIcon width={16} height={16} className="item-icon" />
+                                        <span className="res-time-text">
+                                            {new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </span>
+                                    </div>
+                                    <span className={`status-pill ${res.status}`}>
+                                        {getStatusLabel(res.status)}
+                                    </span>
+                                </div>
+
+                                <div className="res-main-section">
+                                    <div className="customer-info">
+                                        <UserIcon width={18} height={18} className="user-icon" />
+                                        <span className="customer-name">{res.customerName}</span>
+                                    </div>
+                                    <div className="lane-info">
+                                        <span className="lane-badge">{lane?.name || 'Qualquer Pista'}</span>
                                     </div>
                                 </div>
 
-                                <div className="res-actions">
+                                <div className="res-actions-section">
                                     {!isTerminal && (
                                         <>
                                             {res.status === 'pending' && (
                                                 <button
-                                                    className="action-link arrived"
+                                                    className="btn-action btn-arrive"
                                                     onClick={() => updateReservationStatus(res.id, 'arrived')}
                                                 >
-                                                    Chegou
+                                                    <CheckIcon width={16} height={16} />
+                                                    <span>Confirmar Chegada</span>
                                                 </button>
                                             )}
                                             {res.status === 'arrived' && (
                                                 <button
-                                                    className="action-btn convert"
+                                                    className="btn-action btn-open"
                                                     onClick={() => setConvertingResId(res.id)}
                                                 >
-                                                    Abrir Pista
+                                                    <PlayIcon width={14} height={14} />
+                                                    <span>Abrir Pista</span>
                                                 </button>
                                             )}
-                                            <div className="more-actions">
+                                            <div className="actions-dropdown-wrapper">
                                                 <select
-                                                    className="status-select"
+                                                    className="minimal-select"
                                                     value={res.status}
                                                     onChange={(e) => updateReservationStatus(res.id, e.target.value as any)}
                                                 >
-                                                    <option value="" disabled>Ações...</option>
+                                                    <option value="" disabled>Opções</option>
                                                     <option value="pending">Aguardando</option>
                                                     <option value="delayed">Atrasada</option>
                                                     <option value="no-show">No-show</option>
@@ -226,7 +237,10 @@ const AgendaView: React.FC = () => {
                                         </>
                                     )}
                                     {res.status === 'fulfilled' && (
-                                        <span className="fulfilled-msg">Sessão em curso</span>
+                                        <div className="session-ongoing">
+                                            <div className="pulse-dot"></div>
+                                            <span>Sessão em curso</span>
+                                        </div>
                                     )}
                                 </div>
                             </div>
