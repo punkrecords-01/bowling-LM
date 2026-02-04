@@ -53,7 +53,7 @@
 
 .comanda-grid::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+    border-radius: 8px;
 }
 
 .comanda-btn {
@@ -61,7 +61,7 @@
     /* Fixed height for consistent look */
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--text-main);

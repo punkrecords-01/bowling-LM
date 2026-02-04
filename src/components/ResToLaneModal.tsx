@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useLanes } from '../context/LaneContext';
 import './Modal.css';
 
@@ -35,14 +35,14 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content fade-in" style={{ maxWidth: '480px', borderRadius: '24px', background: '#18181b', border: '1px solid var(--border-strong)' }}>
+            <div className="modal-content fade-in" style={{ maxWidth: '480px', borderRadius: '8px', background: '#18181b', border: '1px solid var(--border-strong)' }}>
                 <header className="modal-header" style={{ borderBottom: '1px solid var(--border-color)', padding: '24px' }}>
-                    <h3 style={{ fontFamily: "'Space Mono', monospace", color: 'var(--primary)', fontSize: '1.25rem' }}>Iniciar Sessão</h3>
+                    <h3 style={{ fontFamily: "'Space Mono', monospace", color: 'var(--primary)', fontSize: '1.25rem' }}>Iniciar Sess�o</h3>
                     <button className="close-btn" onClick={onClose} style={{ color: 'var(--text-muted)' }}>&times;</button>
                 </header>
 
                 <div className="modal-body" style={{ padding: '24px' }}>
-                    <div className="reservation-summary" style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px', marginBottom: '24px' }}>
+                    <div className="reservation-summary" style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
                         <div style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>Cliente</div>
                         <div style={{ fontSize: '1.2rem', fontWeight: 800 }}>{reservation ? reservation.customerName : 'Desconhecido'}</div>
                     </div>
@@ -121,7 +121,7 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
                             overflowY: 'auto',
                             padding: '12px',
                             background: 'rgba(0,0,0,0.3)',
-                            borderRadius: '12px',
+                            borderRadius: '8px',
                             border: '1px solid var(--border-color)'
                         }}>
                             {availableComandas.map(num => (
@@ -151,8 +151,8 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
                 </div>
 
                 <footer className="modal-footer" style={{ padding: '24px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px' }}>
-                    <button className="secondary-btn" onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'var(--bg-card-hover)', fontWeight: 800 }}>Voltar</button>
-                    <button className="primary-btn" onClick={handleConfirm} style={{ flex: 2, padding: '12px', borderRadius: '12px', background: 'var(--primary)', color: 'black', fontWeight: 800, textTransform: 'uppercase', boxShadow: '0 4px 15px var(--primary-glow)' }}>Finalizar e Abrir</button>
+                    <button className="secondary-btn" onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: '8px', background: 'var(--bg-card-hover)', fontWeight: 800 }}>Voltar</button>
+                    <button className="primary-btn" onClick={handleConfirm} style={{ flex: 2, padding: '12px', borderRadius: '8px', background: 'var(--primary)', color: 'black', fontWeight: 800, textTransform: 'uppercase', boxShadow: '0 4px 15px var(--primary-glow)' }}>Finalizar e Abrir</button>
                 </footer>
             </div>
         </div>

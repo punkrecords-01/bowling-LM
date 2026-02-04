@@ -47,7 +47,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                         </div>
                         <div className="info-row">
                             <span className="label">Horário Original:</span>
-                            <span className="value">{new Date(reservation.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <span className="value">{new Date(reservation.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
                         </div>
                     </div>
 
@@ -153,7 +153,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                 .custom-select {
                     background: rgba(255, 255, 255, 0.05);
                     border: 1px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 12px;
+                    border-radius: 8px;
                     padding: 12px 16px;
                     cursor: pointer;
                     position: relative;
@@ -187,7 +187,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                     color: white;
                     font-size: 0.65rem;
                     padding: 2px 6px;
-                    border-radius: 4px;
+                    border-radius: 8px;
                     font-weight: 800;
                 }
                 .arrow {
@@ -205,8 +205,8 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                     background: #1e293b; /* Dark slate 800 */
                     border: 1px solid var(--primary);
                     border-top: none;
-                    border-bottom-left-radius: 12px;
-                    border-bottom-right-radius: 12px;
+                    border-bottom-left-radius: 8px;
+                    border-bottom-right-radius: 8px;
                     z-index: 50;
                     max-height: 250px;
                     overflow-y: auto;
@@ -243,7 +243,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
 
                 .dropdown-list::-webkit-scrollbar { width: 6px; }
                 .dropdown-list::-webkit-scrollbar-track { background: transparent; }
-                .dropdown-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+                .dropdown-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 8px; }
             `}</style>
         </div>
     );

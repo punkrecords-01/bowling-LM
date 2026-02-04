@@ -82,7 +82,7 @@ button {
 
 ::-webkit-scrollbar-thumb {
   background: var(--bg-card-hover);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -166,5 +166,5 @@ input[type="date"]::-webkit-clear-button {
 /* Small helper for compact uses */
 .date-picker.small, .date-filter.small {
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 8px;
 }

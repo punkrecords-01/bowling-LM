@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Lane, Session, LogEntry, LaneStatus, Reservation, WaitingCustomer } from '../types';
+import { Lane, Session, LogEntry, LaneStatus, Reservation, WaitingCustomer, LaneType } from '../types';
 import { useAuth } from './AuthContext';
+import { toLocalDateISO } from '../utils/pricing';
 
 interface LaneContextType {
     lanes: Lane[];
@@ -8,8 +9,10 @@ interface LaneContextType {
     reservations: Reservation[];
     waitingList: WaitingCustomer[];
     logs: LogEntry[];
-    openLane: (laneId: string, comanda: string) => void;
-    closeLane: (laneId: string) => void;
+    receiptCounter: number;
+    openLane: (laneId: string, comanda: string, customerName?: string) => void;
+    closeLane: (laneId: string, opts?: { discountMinutes?: number; isBirthdayDiscount?: boolean }) => number; // returns receipt number
+    updateSession: (sessionId: string, updates: Partial<Session>) => void;
     setMaintenance: (laneId: string, reason: string) => void;
     clearMaintenance: (laneId: string) => void;
     addReservation: (reservation: Omit<Reservation, 'id' | 'status'>) => void;
@@ -18,29 +21,39 @@ interface LaneContextType {
     convertReservationToLane: (resId: string, comanda: string, laneId?: string) => void;
     addToWaitingList: (name: string, lanesRequested: number, table?: string, comanda?: string) => void;
     removeFromWaitingList: (id: string) => void;
+    transferLane: (fromLaneId: string, toLaneId: string) => void;
+    getNextReceiptNumber: () => number;
 }
 
 const LaneContext = createContext<LaneContextType | undefined>(undefined);
 
-// Initial Mock Data - Exactly 10 lanes
-const INITIAL_LANES: Lane[] = Array.from({ length: 10 }, (_, i) => {
-    const id = `lane-${i + 1}`;
-    let status: LaneStatus = 'free';
-
-    return {
-        id,
+// Initial Mock Data - 10 Pistas de Boliche + 1 Mesa de Sinuca
+const INITIAL_LANES: Lane[] = [
+    // 10 Pistas de Boliche
+    ...Array.from({ length: 10 }, (_, i) => ({
+        id: `lane-${i + 1}`,
         name: `Pista ${String(i + 1).padStart(2, '0')}`,
-        status,
+        status: 'free' as LaneStatus,
+        type: 'BOL' as LaneType,
         totalUsageTime: Math.random() * 36000000,
-    };
-});
+    })),
+    // 1 Mesa de Sinuca
+    {
+        id: 'snk-1',
+        name: 'Sinuca 01',
+        status: 'free' as LaneStatus,
+        type: 'SNK' as LaneType,
+        totalUsageTime: Math.random() * 18000000,
+    },
+];
 
 export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [lanes, setLanes] = useState<Lane[]>(() => {
         const saved = localStorage.getItem('boliche_lanes');
         if (saved) {
             const parsed = JSON.parse(saved);
-            if (parsed.length === 10) return parsed;
+            // Check if we have the new structure with 1 SNK lane
+            if (parsed.length === 11 && parsed.some((l: Lane) => l.type === 'SNK')) return parsed;
         }
         return INITIAL_LANES;
     });
@@ -65,12 +78,12 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return saved ? JSON.parse(saved) : [];
     });
 
-    const { user } = useAuth();
+    const [receiptCounter, setReceiptCounter] = useState<number>(() => {
+        const saved = localStorage.getItem('boliche_receipt_counter');
+        return saved ? parseInt(saved, 10) : 18735; // Starting from the number in the image
+    });
 
-    const toLocalDateISO = (msOrDate: number | Date) => {
-        const d = new Date(msOrDate);
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    };
+    const { user } = useAuth();
 
     // Clean up stale 'reserved' lane statuses when reservations change (e.g., persisted state)
     useEffect(() => {
@@ -91,9 +104,16 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('boliche_reservations', JSON.stringify(reservations));
         localStorage.setItem('boliche_waiting', JSON.stringify(waitingList));
         localStorage.setItem('boliche_logs', JSON.stringify(logs));
-    }, [lanes, sessions, reservations, waitingList, logs]);
+        localStorage.setItem('boliche_receipt_counter', receiptCounter.toString());
+    }, [lanes, sessions, reservations, waitingList, logs, receiptCounter]);
 
-    const addLog = (action: string, context: string, details?: any) => {
+    const getNextReceiptNumber = () => {
+        const next = receiptCounter + 1;
+        setReceiptCounter(next);
+        return next;
+    };
+
+    const addLog = (action: string, context: string, details?: any, laneId?: string) => {
         const newLog: LogEntry = {
             id: crypto.randomUUID(),
             timestamp: Date.now(),
@@ -101,53 +121,75 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
             userName: user?.name || 'Sistema',
             action,
             context,
+            laneId,
             details,
         };
         setLogs(prev => [newLog, ...prev]);
     };
 
-    const openLane = (laneId: string, comanda: string) => {
+    const openLane = (laneId: string, comanda: string, customerName?: string) => {
+        const lane = lanes.find(l => l.id === laneId);
         const newSession: Session = {
             id: crypto.randomUUID(),
             laneId,
             comanda,
+            customerName: customerName || '',
             openedBy: user?.name || 'Sistema',
             openedById: user?.id || 'sistema',
             startTime: Date.now(),
             pauseTimeTotal: 0,
             maintenanceTimeTotal: 0,
             isActive: true,
+            laneType: lane?.type || 'BOL',
         };
 
         setSessions(prev => [...prev, newSession]);
-        setLanes(prev => prev.map(lane =>
-            lane.id === laneId ? { ...lane, status: 'active', currentSessionId: newSession.id } : lane
+        setLanes(prev => prev.map(l =>
+            l.id === laneId ? { ...l, status: 'active', currentSessionId: newSession.id } : l
         ));
 
         // Automatic removal from waiting list if comanda matches
         setWaitingList(prev => {
-            const match = prev.find(item => item.comanda === comanda);
-            if (match) {
-                const contextDesc = `Cliente ${match.name} movido da Mesa ${match.table || 'N/A'} para Pista ${laneId} (#${comanda})`;
-                addLog('Transição Fila -> Pista', contextDesc);
-                return prev.filter(item => item.id !== match.id);
+            const matchIndex = prev.findIndex(item => item.comanda === comanda);
+            if (matchIndex !== -1) {
+                const match = prev[matchIndex];
+                const contextDesc = `Cliente ${match.name} movido da Mesa ${match.table || 'N/A'} para Pista ${laneId.split('-')[1]} (#${comanda})`;
+                
+                addLog('Transição Fila -> Pista', contextDesc, undefined, laneId);
+
+                if (match.lanesRequested > 1) {
+                    // Reduce lanes requested but keep in list
+                    const newList = [...prev];
+                    newList[matchIndex] = { ...match, lanesRequested: match.lanesRequested - 1 };
+                    return newList;
+                } else {
+                    // Remove if it was the last lane requested
+                    return prev.filter(item => item.id !== match.id);
+                }
             }
             return prev;
         });
 
-        addLog('Abrir Pista', `Pista ${laneId.split('-')[1].padStart(2, '0')}, Comanda #${comanda}`);
+        addLog('Abrir Pista', `Pista ${laneId.split('-')[1].padStart(2, '0')}, Comanda #${comanda}`, undefined, laneId);
     };
 
-    const closeLane = (laneId: string) => {
+    const closeLane = (laneId: string, opts?: { discountMinutes?: number; isBirthdayDiscount?: boolean }): number => {
         const lane = lanes.find(l => l.id === laneId);
         const session = sessions.find(s => s.id === lane?.currentSessionId && s.isActive);
-        if (!lane || !session) return;
+        if (!lane || !session) return receiptCounter;
 
         const now = Date.now();
         const duration = now - session.startTime;
 
+        const finalDiscountMinutes = opts?.discountMinutes ?? session.discountMinutes ?? 0;
+        const finalIsBirthday = opts?.isBirthdayDiscount ?? session.isBirthdayDiscount ?? false;
+        
+        // Get next receipt number
+        const newReceiptNumber = receiptCounter + 1;
+        setReceiptCounter(newReceiptNumber);
+
         setSessions(prev => prev.map(s =>
-            s.id === lane.currentSessionId ? { ...s, isActive: false, endTime: now } : s
+            s.id === lane.currentSessionId ? { ...s, isActive: false, endTime: now, discountMinutes: finalDiscountMinutes, isBirthdayDiscount: finalIsBirthday } : s
         ));
 
         setLanes(prev => prev.map(l =>
@@ -159,13 +201,40 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } : l
         ));
 
-        addLog('Fechar Pista', `Pista ${laneId.split('-')[1].padStart(2, '0')}, Comanda #${session.comanda}`, {
+        const laneLabel = lane.type === 'SNK' ? `Sinuca ${laneId.split('-')[1].padStart(2, '0')}` : `Pista ${laneId.split('-')[1].padStart(2, '0')}`;
+        
+        addLog('Fechar Pista', `${laneLabel}, Comanda #${session.comanda}`, {
             laneName: lane.name,
+            laneType: lane.type,
             comanda: session.comanda,
+            customerName: session.customerName,
             startTime: session.startTime,
             endTime: now,
-            duration: duration
-        });
+            duration: duration,
+            discountMinutes: finalDiscountMinutes,
+            isBirthdayDiscount: finalIsBirthday,
+            receiptNumber: newReceiptNumber,
+        }, laneId);
+        
+        return newReceiptNumber;
+    };
+
+    const updateSession = (sessionId: string, updates: Partial<Session>) => {
+        setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, ...updates } : s));
+        const session = sessions.find(s => s.id === sessionId);
+        
+        // Log only if startTime was updated (manual adjustment)
+        if (session && updates.startTime) {
+            const oldTimeStr = new Date(session.startTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const newTimeStr = new Date(updates.startTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+            
+            addLog(
+                'Ajustar Horário', 
+                `Pista ${session.laneId.split('-')[1]}, de ${oldTimeStr} para ${newTimeStr}`, 
+                updates, 
+                session.laneId
+            );
+        }
     };
 
     const setMaintenance = (laneId: string, reason: string) => {
@@ -190,7 +259,7 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
             };
         }));
         
-        addLog('Manutenção', `Pista: ${laneId}, Motivo: ${reason}`);
+        addLog('Manutenção', `Pista: ${laneId}, Motivo: ${reason}`, undefined, laneId);
     };
 
     const clearMaintenance = (laneId: string) => {
@@ -222,7 +291,40 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 isMaintenancePaused: false 
             };
         }));
-        addLog('Liberar Pista', `Pista: ${laneId}`);
+        addLog('Liberar Pista', `Pista: ${laneId}`, undefined, laneId);
+    };
+
+    const transferLane = (fromLaneId: string, toLaneId: string) => {
+        const fromLane = lanes.find(l => l.id === fromLaneId);
+        const toLane = lanes.find(l => l.id === toLaneId);
+        
+        if (!fromLane || !toLane || !fromLane.currentSessionId) {
+            console.error("Transfer error: Source or desk not found", { fromLaneId, toLaneId });
+            return;
+        }
+
+        const sessionId = fromLane.currentSessionId;
+
+        // 1. Update Session
+        setSessions(prev => prev.map(s => 
+            s.id === sessionId ? { ...s, laneId: toLaneId, laneType: toLane.type } : s
+        ));
+
+        // 2. Update Lanes
+        setLanes(prev => prev.map(l => {
+            if (l.id === fromLaneId) {
+                return { ...l, status: 'free', currentSessionId: undefined };
+            }
+            if (l.id === toLaneId) {
+                return { ...l, status: 'active', currentSessionId: sessionId };
+            }
+            return l;
+        }));
+
+        // 3. Log
+        const fromLabel = fromLane.name;
+        const toLabel = toLane.name;
+        addLog('Transferir Pista', `De ${fromLabel} para ${toLabel}`, undefined, toLaneId);
     };
 
     const addReservation = (res: Omit<Reservation, 'id' | 'status'>) => {
@@ -232,7 +334,7 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
             status: 'pending'
         };
         setReservations(prev => [...prev, newRes]);
-        addLog('Nova Reserva', `Pista: ${res.laneId || 'Qualquer'}, Cliente: ${res.customerName}`);
+        addLog('Nova Reserva', `Pista: ${res.laneId || 'Qualquer'}, Cliente: ${res.customerName}`, undefined, res.laneId);
     };
 
     const cancelReservation = (id: string) => {
@@ -267,7 +369,7 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         openLane(effectiveLaneId, comanda);
         setReservations(prev => prev.map(r => r.id === resId ? { ...r, status: 'fulfilled', laneId: effectiveLaneId } : r));
-        addLog('Converter Reserva', `Reserva: ${resId} para Pista ${effectiveLaneId}, Comanda #${comanda}`);
+        addLog('Converter Reserva', `Reserva: ${resId} para Pista ${effectiveLaneId}, Comanda #${comanda}`, undefined, effectiveLaneId);
     };
 
     const getAvgSessionTime = () => {
@@ -345,10 +447,10 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <LaneContext.Provider value={{
-            lanes, sessions, reservations, waitingList, logs,
-            openLane, closeLane, setMaintenance, clearMaintenance,
+            lanes, sessions, reservations, waitingList, logs, receiptCounter,
+            openLane, closeLane, updateSession, setMaintenance, clearMaintenance,
             addReservation, cancelReservation, updateReservationStatus, convertReservationToLane,
-            addToWaitingList, removeFromWaitingList
+            addToWaitingList, removeFromWaitingList, transferLane, getNextReceiptNumber
         }}>
             {children}
         </LaneContext.Provider>

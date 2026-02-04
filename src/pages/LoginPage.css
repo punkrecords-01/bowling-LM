@@ -107,7 +107,7 @@
     height: 72px;
     background-color: var(--bg-card-hover);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 8px;
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-main);

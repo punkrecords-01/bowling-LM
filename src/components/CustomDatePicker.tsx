@@ -119,7 +119,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                 .picker-trigger {
                     background: var(--bg-card);
                     border: 1px solid var(--border-color);
-                    border-radius: 14px;
+                    border-radius: 8px;
                     padding: 12px 16px;
                     cursor: pointer;
                     display: flex;
@@ -145,7 +145,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     align-items: center;
                     width: auto;
                     height: 44px;
-                    border-radius: 14px;
+                    border-radius: 8px;
                 }
                 .custom-picker-container.agenda-date-filter .picker-trigger {
                     /* Let the outer container (.agenda-date-filter) provide the card/bg and border */
@@ -182,7 +182,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     /* Slightly more opaque and warmer so it feels less transparent */
                     background: rgba(24,24,27,0.96);
                     border: 1px solid rgba(255,255,255,0.06);
-                    border-radius: 12px;
+                    border-radius: 8px;
                     /* Stronger shadow to separate from backdrop */
                     box-shadow: 0 18px 50px rgba(0,0,0,0.7);
                     z-index: 12000;
@@ -206,7 +206,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     color: white;
                     width: 32px;
                     height: 32px;
-                    border-radius: 6px;
+                    border-radius: 8px;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
@@ -240,7 +240,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                     align-items: center;
                     justify-content: center;
                     font-size: 0.9rem;
-                    border-radius: 4px;
+                    border-radius: 8px;
                     cursor: pointer;
                     transition: all 0.15s;
                     color: var(--text-main);

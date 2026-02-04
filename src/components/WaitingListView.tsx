@@ -6,8 +6,7 @@ import DeleteWaitingConfirmationModal from './DeleteWaitingConfirmationModal';
 import AddWaitingConfirmationModal from './AddWaitingConfirmationModal';
 
 const WaitingListView: React.FC = () => {
-    const { waitingList, addToWaitingList, removeFromWaitingList } = useLanes();
-    const [name, setName] = useState('');
+    const { waitingList, addToWaitingList, removeFromWaitingList, logs } = useLanes();
     const [lanesReq, setLanesReq] = useState(1);
     const [table, setTable] = useState('');
     const [comanda, setComanda] = useState('');
@@ -15,11 +14,15 @@ const WaitingListView: React.FC = () => {
     const [entryToDelete, setEntryToDelete] = useState<any>(null);
     const [pendingEntry, setPendingEntry] = useState<any>(null);
 
+    const transitionLogs = logs.filter(log => log.action === 'Transição Fila -> Pista').slice(0, 10);
+
+    const formatTime = (ts: number) => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (name) {
-            setPendingEntry({ name, lanesRequested: lanesReq, table: table || '', comanda: comanda || '' });
-        }
+        // Use comanda or table as identifier since name is removed
+        const identifier = comanda ? `Comanda #${comanda}` : (table ? `Mesa ${table}` : 'Grupo Sem Nome');
+        setPendingEntry({ name: identifier, lanesRequested: lanesReq, table: table || '', comanda: comanda || '' });
     };
 
     const confirmAdd = () => {
@@ -30,7 +33,6 @@ const WaitingListView: React.FC = () => {
                 pendingEntry.table || undefined,
                 pendingEntry.comanda || undefined
             );
-            setName('');
             setLanesReq(1);
             setTable('');
             setComanda('');
@@ -47,26 +49,11 @@ const WaitingListView: React.FC = () => {
 
             <form className="waiting-form-premium" onSubmit={handleSubmit}>
                 <div className="form-grid">
-                    <div className="form-field full-width">
-                        <label>Nome do Cliente</label>
-                        <input
-                            type="text"
-                            placeholder="Ex: João Silva"
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                            required
-                        />
-                    </div>
-
                     <div className="form-field">
-                        <label>Qtd. Pistas</label>
-                        <input
-                            type="number"
-                            min="1"
-                            max="5"
-                            value={lanesReq}
-                            onChange={e => setLanesReq(parseInt(e.target.value))}
-                        />
+                        <label>Comanda</label>
+                        <div className="comanda-selector-trigger" onClick={() => setShowComandaModal(true)}>
+                            {comanda ? `#${comanda}` : "Selecionar"}
+                        </div>
                     </div>
 
                     <div className="form-field">
@@ -80,10 +67,14 @@ const WaitingListView: React.FC = () => {
                     </div>
 
                     <div className="form-field">
-                        <label>Comanda</label>
-                        <div className="comanda-selector-trigger" onClick={() => setShowComandaModal(true)}>
-                            {comanda ? `#${comanda}` : "Selecionar"}
-                        </div>
+                        <label>Qtd. Pistas</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="5"
+                            value={lanesReq}
+                            onChange={e => setLanesReq(parseInt(e.target.value))}
+                        />
                     </div>
                 </div>
 
@@ -144,6 +135,20 @@ const WaitingListView: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {transitionLogs.length > 0 && (
+                <div className="transition-history">
+                    <h3>Histórico Recente de Transições</h3>
+                    <div className="transition-list">
+                        {transitionLogs.map(log => (
+                            <div key={log.id} className="transition-item">
+                                <span className="log-time">{formatTime(log.timestamp)}</span>
+                                <span className="log-context">{log.context}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,9 +1,11 @@
 export type LaneStatus = 'free' | 'active' | 'reserved' | 'maintenance';
+export type LaneType = 'BOL' | 'SNK'; // BOL = Boliche, SNK = Sinuca
 
 export interface Lane {
     id: string;
     name: string;
     status: LaneStatus;
+    type: LaneType; // Tipo da pista/mesa
     currentSessionId?: string;
     maintenanceReason?: string;
     isMaintenancePaused?: boolean;
@@ -34,6 +36,7 @@ export interface Session {
     id: string;
     laneId: string;
     comanda: string;
+    customerName?: string; // Nome do cliente
     openedBy: string; // Nome do funcionário que abriu
     openedById: string; // ID do funcionário
     startTime: number; // timestamp
@@ -42,6 +45,9 @@ export interface Session {
     maintenanceTimeTotal: number; // in milliseconds
     lastMaintenanceStart?: number; // timestamp
     isActive: boolean;
+    discountMinutes?: number;
+    isBirthdayDiscount?: boolean;
+    laneType?: LaneType; // Tipo quando a sessão foi aberta
 }
 
 export interface LogEntry {
@@ -51,6 +57,7 @@ export interface LogEntry {
     userName: string;
     action: string;
     context: string;
+    laneId?: string;
     details?: any; // For full session data/receipts
 }
 
@@ -59,4 +66,37 @@ export interface User {
     name: string;
     role: 'atendente' | 'caixa' | 'gerente';
     pin: string;
+}
+
+export interface PricingRules {
+    BOL: {
+        weekday: { before18h: number; after18h: number };
+        friday: { before18h: number; after18h: number };
+        saturday: { allDay: number };
+        sunday: { allDay: number };
+    };
+    SNK: {
+        allDay: number;
+    };
+}
+
+export interface Holiday {
+    date: string; // ISO YYYY-MM-DD
+    name: string;
+}
+
+// Dados de sessão fechada para relatório
+export interface ClosedSessionReport {
+    id: string;
+    laneId: string;
+    laneName: string;
+    laneType: LaneType;
+    comanda: string;
+    customerName?: string;
+    startTime: number;
+    endTime: number;
+    durationMinutes: number;
+    totalValue: number;
+    discountValue: number;
+    finalValue: number;
 }

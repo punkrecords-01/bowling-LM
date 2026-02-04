@@ -98,6 +98,32 @@
   box-shadow: 0 4px 15px var(--primary-glow);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.config-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.config-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
 .user-profile {
   display: flex;
   align-items: center;
@@ -228,8 +254,9 @@
 
 .lane-header-top {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 16px;
   margin-bottom: 1.5rem;
   z-index: 2;
 }
@@ -237,7 +264,7 @@
 .lane-badge-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .small-lane-label {
@@ -250,7 +277,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
+  border-radius: 8px;
+}
+
+.lane-simple-time {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: 0.05em;
+}
+
+.small-lane-label.snk-label {
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
 }
 
 .active .small-lane-label { 
@@ -280,7 +319,7 @@
   background: rgba(239, 68, 68, 0.15);
   color: var(--status-error);
   padding: 6px 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -396,6 +435,18 @@
   font-size: 0.9rem;
 }
 
+.maintenance-reason-tag {
+  margin-top: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--status-error);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
 .maintenance-desc {
   color: var(--text-muted);
   font-size: 0.8rem;
@@ -411,7 +462,7 @@
 .lane-action-main {
   flex: 1;
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -456,7 +507,7 @@
 .lane-action-tool {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid var(--border-color);
   background: transparent;
   color: var(--text-muted);
@@ -501,7 +552,7 @@
   font-size: 0.6rem;
   font-weight: 900;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-top: 4px;
   animation: blink-red 1s infinite;
 }
@@ -634,7 +685,7 @@
   color: var(--status-error);
   background: rgba(239, 68, 68, 0.1);
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .mini-timer {
@@ -709,7 +760,7 @@
 .action-btn {
   width: 100%;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   background-color: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   font-weight: 800;
@@ -761,7 +812,7 @@
 
 .filter-tag {
   padding: 6px 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-muted);
@@ -780,7 +831,7 @@
 .logs-table-container {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   margin-top: 20px;
 }
@@ -812,7 +863,7 @@
 
 .log-action-tag {
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: rgba(139, 92, 246, 0.1);
   color: var(--primary);
   font-size: 0.75rem;

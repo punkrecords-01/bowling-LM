@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,4 +34,4 @@ jobs:
           branch: gh-pages
           folder: dist
           clean: true
-          token: ${{ secrets.ACTIONS_DEPLOY_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}

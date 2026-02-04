@@ -35,7 +35,7 @@
     color: var(--text-on-primary);
     border: none;
     padding: 0.75rem 1.5rem;
-    border-radius: 99px;
+    border-radius: 8px;
     font-weight: 800;
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -66,7 +66,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    border-radius: 14px;
+    border-radius: 8px;
     color: var(--text-main);
     font-size: 0.9rem;
     font-weight: 600;
@@ -98,7 +98,7 @@
 .reservation-item {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 1.25rem 2rem;
     display: grid;
     grid-template-columns: 180px 1fr auto;
@@ -237,7 +237,7 @@
     color: var(--text-muted);
     background: rgba(255, 255, 255, 0.03);
     padding: 4px 12px;
-    border-radius: 99px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
 }
 
@@ -253,7 +253,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 10px 1.5rem;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -288,7 +288,7 @@
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -343,7 +343,7 @@
     background: var(--bg-dark);
     border: 1px solid var(--border-strong);
     padding: 2.5rem;
-    border-radius: 24px;
+    border-radius: 8px;
     width: 100%;
     max-width: 480px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -376,7 +376,7 @@
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     padding: 1rem;
-    border-radius: 12px;
+    border-radius: 8px;
     color: var(--text-main);
     font-size: 1rem;
     transition: var(--transition-base);
@@ -400,7 +400,7 @@
     background: var(--primary);
     color: var(--text-on-primary);
     padding: 1rem;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 800;
     text-transform: uppercase;
 }
@@ -410,7 +410,7 @@
     background: var(--bg-card-hover);
     color: var(--text-main);
     padding: 1rem;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 700;
     text-transform: uppercase;
 }
@@ -421,7 +421,7 @@
     text-align: center;
     background: var(--bg-card);
     border: 2px dashed var(--border-color);
-    border-radius: 24px;
+    border-radius: 8px;
     color: var(--text-muted);
 }
 

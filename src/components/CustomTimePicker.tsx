@@ -163,7 +163,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                 .picker-trigger {
                     background: var(--bg-card);
                     border: 1px solid var(--border-color);
-                    border-radius: 12px;
+                    border-radius: 8px;
                     padding: 0 16px;
                     height: 48px;
                     cursor: text;
@@ -217,7 +217,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     left: 0;
                     background: #18181b; /* Zinc 900 sólido para evitar transparência excessiva */
                     border: 1px solid var(--border-strong);
-                    border-radius: 12px;
+                    border-radius: 8px;
                     box-shadow: 0 10px 40px rgba(0,0,0,0.6);
                     z-index: 1000;
                     padding: 16px;
@@ -252,7 +252,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     overflow-y: auto;
                     height: 100%;
                     border: 1px solid var(--border-color);
-                    border-radius: 6px;
+                    border-radius: 8px;
                     background: rgba(0,0,0,0.2);
                     scrollbar-width: thin;
                     scrollbar-color: var(--primary) transparent;
@@ -260,7 +260,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                 .column-scroll::-webkit-scrollbar { width: 6px; }
                 .column-scroll::-webkit-scrollbar-thumb { 
                     background: rgba(255,255,255,0.2); 
-                    border-radius: 4px; 
+                    border-radius: 8px; 
                 }
 
                 .time-unit {
@@ -280,7 +280,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ value, onChange, la
                     background: var(--primary);
                     color: black;
                     font-weight: 800;
-                    border-radius: 4px;
+                    border-radius: 8px;
                 }
                 
                 .time-divider {

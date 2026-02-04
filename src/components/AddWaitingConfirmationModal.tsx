@@ -24,7 +24,7 @@ const AddWaitingConfirmationModal: React.FC<AddWaitingConfirmationModalProps> = 
                     <p className="summary-intro">Verifique os dados antes de adicionar à fila:</p>
                     <div className="summary-info">
                         <div className="info-row">
-                            <span className="label">Cliente:</span>
+                            <span className="label">Identificação:</span>
                             <span className="value">{data.name}</span>
                         </div>
                         <div className="info-row">
@@ -33,14 +33,8 @@ const AddWaitingConfirmationModal: React.FC<AddWaitingConfirmationModalProps> = 
                         </div>
                         {data.table && (
                             <div className="info-row">
-                                <span className="label">Mesa:</span>
+                                <span className="label">Mesa Atual:</span>
                                 <span className="value">{data.table}</span>
-                            </div>
-                        )}
-                        {data.comanda && (
-                            <div className="info-row">
-                                <span className="label">Comanda:</span>
-                                <span className="value">#{data.comanda}</span>
                             </div>
                         )}
                     </div>

@@ -107,7 +107,7 @@
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     padding: 20px;
-    border-radius: 16px;
+    border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -136,7 +136,7 @@
     background: var(--primary-glow);
     color: var(--primary);
     padding: 4px 10px;
-    border-radius: 20px;
+    border-radius: 8px;
 }
 
 .extra-info {
@@ -149,7 +149,7 @@
     font-size: 0.7rem;
     font-weight: 800;
     padding: 4px 12px;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .info-tag.table {
@@ -192,4 +192,45 @@
 .remove-btn:hover {
     background: rgba(239, 68, 68, 0.2);
     transform: scale(1.1);
+}
+
+.transition-history {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.transition-history h3 {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+}
+
+.transition-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.transition-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.transition-item .log-time {
+    color: var(--primary);
+    font-weight: 700;
+    min-width: 50px;
+}
+
+.transition-item .log-context {
+    color: var(--text-secondary);
 }

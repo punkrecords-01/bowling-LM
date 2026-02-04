@@ -23,7 +23,7 @@
     display: flex;
     background: rgba(0, 0, 0, 0.3);
     padding: 6px;
-    border-radius: 14px;
+    border-radius: 8px;
     gap: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -32,7 +32,7 @@
     background: transparent;
     border: none;
     padding: 8px 16px;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
     font-weight: 700;
@@ -118,8 +118,9 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    align-items: center;
-    width: 100%;
+    align-items: flex-start; /* Alinha as linhas à esquerda entre si */
+    width: fit-content; /* Deixa o grupo ocupar apenas o necessário para centralizar no pai */
+    margin: 0 auto;
 }
 
 .pistas-container {
@@ -127,11 +128,23 @@
     gap: 16px;
     perspective: 1200px;
     width: 100%;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .pistas-container.bottom-row {
-    justify-content: center;
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative; /* Para ajudar no contexto de alinhamento */
+}
+
+/* Container específico para a sinuca ocupar o resto do espaço */
+.sinuca-wrapper {
+    flex-grow: 1; /* Ocupa todo o espaço restante após as pistas 1 e 2 */
+    display: flex;
+    justify-content: center; /* Centraliza a mesa dentro desse espaço restante */
+    align-items: center;
 }
 
 .pistas-placeholder {
@@ -255,7 +268,7 @@
     height: 100%;
     width: 100%;
     background: #1a1a1a;
-    border-radius: 4px;
+    border-radius: 8px;
     position: relative;
     transform: rotateX(25deg);
     transform-origin: bottom;
@@ -376,7 +389,7 @@
     height: 150px;
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -449,6 +462,23 @@
     position: relative;
 }
 
+.lane-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.lane-started-at {
+    font-size: 0.75rem;
+    color: var(--primary);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
 .lane-comanda {
     font-size: 1.4rem;
     font-weight: 800;
@@ -467,7 +497,7 @@
     width: 70%;
     height: 4px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    border-radius: 8px;
     margin-top: 4px;
     overflow: hidden;
 }
@@ -562,4 +592,140 @@
     color: var(--text-muted);
     opacity: 0.6;
     letter-spacing: 0.05em;
+}
+
+/* Sinuca Inline (ao lado das pistas 1-2) */
+.sinuca-table-inline {
+    width: 320px; 
+    height: 160px; 
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.sinuca-table-inline:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sinuca-table-inline .sinuca-felt {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border: 6px solid rgba(139, 94, 60, 0.3); /* Moldura com tom de madeira translúcido */
+    border-radius: 8px;
+    gap: 4px;
+    position: relative;
+    box-sizing: border-box;
+    z-index: 1;
+    background: linear-gradient(135deg, rgba(20, 40, 30, 0.4) 0%, rgba(10, 20, 15, 0.4) 100%); /* Verde escuro tecnológico */
+}
+
+/* Buracos da sinuca (pockets) */
+.sinuca-pockets {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.sinuca-pockets span {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #000;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.poc-tl { top: -4px; left: -4px; }
+.poc-tr { top: -4px; right: -4px; }
+.poc-bl { bottom: -4px; left: -4px; }
+.poc-br { bottom: -4px; right: -4px; }
+.poc-tc { top: -6px; left: 50%; transform: translateX(-50%); }
+.poc-bc { bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+.sinuca-table-inline .sinuca-icon {
+    display: none; /* Remove o emoji de todos os estados */
+}
+
+.sinuca-table-inline .sinuca-num {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 5rem; /* Aumentado para acompanhar o tamanho da mesa */
+    color: white;
+    opacity: 0.05;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+
+/* Sinuca states - Wireframe style */
+.sinuca-table-inline.free .sinuca-felt {
+    border-color: rgba(139, 94, 60, 0.2);
+}
+
+.sinuca-table-inline.active .sinuca-felt {
+    border-color: var(--primary); /* Amarelo/Ouro padrão do boliche ao invés de azul */
+    box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.08), 0 0 10px rgba(255, 215, 0, 0.02);
+    background: linear-gradient(135deg, rgba(30, 60, 45, 0.6) 0%, rgba(15, 30, 25, 0.6) 100%);
+}
+
+.sinuca-table-inline.active .sinuca-icon {
+    display: none; /* Remove o emoji */
+}
+
+@keyframes active-glow {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.sinuca-table-inline.reserved .sinuca-felt {
+    border-color: var(--status-reserved);
+    background: rgba(161, 161, 170, 0.02);
+}
+
+.sinuca-table-inline.maintenance .sinuca-felt {
+    border-color: var(--status-error);
+    background: rgba(239, 68, 68, 0.02);
+}
+
+.sinuca-table-inline .lane-content {
+    z-index: 3;
+    font-size: 0.75rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sinuca-table-inline .lane-timer {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.sinuca-table-inline .lane-comanda {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+}
+
+.sinuca-table-inline .lane-progress-mini {
+    display: none;
 }

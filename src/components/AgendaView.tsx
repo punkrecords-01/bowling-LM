@@ -4,15 +4,12 @@ import ResToLaneModal from './ResToLaneModal';
 import CustomDatePicker from './CustomDatePicker';
 import CustomTimePicker from './CustomTimePicker';
 import { ClockIcon, UserIcon, CheckIcon, PlayIcon } from './Icons';
+import { toLocalDateISO } from '../utils/pricing';
 import './AgendaView.css';
 
 const AgendaView: React.FC = () => {
     const { lanes, reservations, addReservation, updateReservationStatus, convertReservationToLane } = useLanes();
     const [isAdding, setIsAdding] = useState(false);
-    const toLocalDateISO = (msOrDate: number | Date) => {
-        const d = new Date(msOrDate);
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    };
 
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [dateFilter, setDateFilter] = useState<string>(toLocalDateISO(Date.now()));
@@ -182,7 +179,7 @@ const AgendaView: React.FC = () => {
                                     <div className="res-time-wrapper">
                                         <ClockIcon width={16} height={16} className="item-icon" />
                                         <span className="res-time-text">
-                                            {new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                                         </span>
                                     </div>
                                     <span className={`status-pill ${res.status}`}>

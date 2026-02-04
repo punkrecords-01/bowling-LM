@@ -12,6 +12,8 @@
     border-radius: 8px;
     border: 1px solid var(--border-color);
     backdrop-filter: blur(16px);
+    position: relative;
+    z-index: 1;
 }
 
 .search-group {
@@ -27,22 +29,13 @@
     border-radius: 8px;
     color: white;
     font-size: 0.95rem;
+    height: 44px;
 }
 
 .search-input:focus {
     border-color: var(--primary);
     outline: none;
     background: rgba(255, 255, 255, 0.08);
-}
-
-.date-picker {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
-    padding: 12px;
-    border-radius: 8px;
-    color: white;
-    font-family: inherit;
-    cursor: pointer;
 }
 
 .history-date-filter {
@@ -59,7 +52,7 @@
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 8px 16px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
@@ -83,6 +76,99 @@
     border-radius: 8px;
     overflow: hidden;
     backdrop-filter: blur(16px);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-view .primary-btn {
+    background: #fde047; /* Yellow 300 sólido */
+    border: none;
+    color: #000000; /* Texto preto para legibilidade máxima */
+    padding: 0 1rem;
+    height: 32px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: none; /* Shadow removed */
+}
+
+.history-view .primary-btn:hover {
+    background: #fef08a; /* Yellow 200 */
+    transform: translateY(-1px);
+    box-shadow: none; /* Shadow removed on hover */
+}
+
+.history-view .primary-btn.secondary-style {
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important; /* Shadow removed */
+}
+
+.history-view .primary-btn.secondary-style:hover {
+    background: #f4f4f5 !important;
+}
+
+.history-view .primary-btn svg {
+    width: 14px;
+    height: 14px;
+    opacity: 1;
+    stroke: currentColor;
+    stroke-width: 2.5px;
+}
+
+.check-col {
+    padding-right: 0 !important;
+}
+
+.log-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.log-checkbox:checked {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.log-checkbox:checked::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border: solid black;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.log-checkbox:hover {
+    border-color: var(--primary);
+    background: rgba(253, 224, 71, 0.1);
+}
+
+.history-row.selected {
+    background: rgba(253, 224, 71, 0.05) !important;
 }
 
 .history-table {
@@ -120,7 +206,7 @@
 .user-pill {
     background: rgba(255, 255, 255, 0.05);
     padding: 4px 12px;
-    border-radius: 12px;
+    border-radius: 8px;
     display: inline-block;
     font-weight: 600;
     color: white;
@@ -128,7 +214,7 @@
 
 .action-badge {
     padding: 4px 10px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;

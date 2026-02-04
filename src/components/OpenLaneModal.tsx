@@ -12,12 +12,17 @@ interface OpenLaneModalProps {
 const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfirm }) => {
     const { reservations, lanes, sessions } = useLanes();
     const [comanda, setComanda] = useState('');
+    const [comandaSearch, setComandaSearch] = useState('');
     const [isReservation, setIsReservation] = useState(false);
     const [selectedResId, setSelectedResId] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
 
     const lane = lanes.find(l => l.id === laneId);
     const today = new Date().toISOString().split('T')[0];
+
+    const availableComandas = Array.from({ length: 60 }, (_, i) => (i + 1).toString())
+        .filter(num => !sessions.some(s => s.isActive && s.comanda === num))
+        .filter(num => num.includes(comandaSearch));
 
     // Filter today's reservations that are not yet fulfilled/cancelled
     const todayReservations = reservations.filter(res => {
@@ -63,24 +68,48 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
 
                 <div className="modal-body">
                     <div className="form-group">
-                        <label>Número da Comanda (1-60)</label>
-                        <input
-                            type="text"
-                            className="modal-input"
-                            placeholder="Ex: 5"
-                            value={comanda}
-                            onChange={e => {
-                                const val = e.target.value.replace(/\D/g, '');
-                                if (val === '' || (parseInt(val) >= 1 && parseInt(val) <= 60)) {
-                                    setComanda(val);
-                                    setError(null);
-                                }
-                            }}
-                            autoFocus
-                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+                            <label style={{ margin: 0, fontSize: '1rem' }}>Digite ou Selecione a Comanda</label>
+                            <input 
+                                type="text" 
+                                placeholder="FILTRAR NÚMERO..." 
+                                className="comanda-search-large"
+                                value={comandaSearch}
+                                onChange={e => {
+                                    const val = e.target.value.replace(/\D/g, '');
+                                    const numVal = parseInt(val, 10);
+                                    if (val === '' || (numVal >= 1 && numVal <= 60)) {
+                                        setComandaSearch(val);
+                                        // Auto-select if exact match found
+                                        if (availableComandas.includes(val)) {
+                                            setComanda(val);
+                                        }
+                                    }
+                                }}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="comanda-grid-inline">
+                            {availableComandas.length > 0 ? availableComandas.map(num => (
+                                <button 
+                                    key={num}
+                                    className={`comanda-btn-mini ${comanda === num ? 'selected' : ''}`}
+                                    onClick={() => {
+                                        setComanda(num);
+                                        setError(null);
+                                    }}
+                                >
+                                    {num}
+                                </button>
+                            )) : (
+                                <div className="empty-msg" style={{ gridColumn: '1/-1', padding: '20px' }}>
+                                    Nenhuma comanda livre encontrada.
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="toggle-group" style={{ margin: '20px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div className="toggle-group" style={{ margin: '15px 0 10px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <label className="switch">
                             <input 
                                 type="checkbox" 
@@ -110,7 +139,7 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
                                             </div>
                                             <div className="res-time">
                                                 <ClockIcon width={12} height={12} />
-                                                <span>{new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                <span>{new Date(res.startTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
                                             </div>
                                         </div>
                                         {res.laneId && (
@@ -134,6 +163,66 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
             </div>
 
             <style>{`
+                .comanda-grid-inline {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+                    gap: 8px;
+                    max-height: 180px;
+                    overflow-y: auto;
+                    background: rgba(0,0,0,0.2);
+                    padding: 12px;
+                    border-radius: 8px;
+                    border: 1px solid var(--border-strong);
+                }
+                .comanda-btn-mini {
+                    aspect-ratio: 1;
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    color: white;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.9rem;
+                }
+                .comanda-btn-mini:hover {
+                    border-color: var(--primary);
+                    background: rgba(253, 224, 71, 0.1);
+                }
+                .comanda-btn-mini.selected {
+                    background: var(--primary);
+                    color: black;
+                    border-color: var(--primary);
+                    box-shadow: 0 0 15px var(--primary-glow);
+                    transform: scale(1.05);
+                }
+                .comanda-search-large {
+                    background: var(--bg-dark) !important;
+                    border: 2px solid var(--border-strong) !important;
+                    border-radius: 8px !important;
+                    padding: 14px 20px !important;
+                    color: white !important;
+                    width: 100% !important;
+                    font-size: 1.2rem !important;
+                    font-weight: 800 !important;
+                    outline: none !important;
+                    letter-spacing: 2px !important;
+                    text-align: center !important;
+                    transition: all 0.2s !important;
+                }
+                .comanda-search-large:focus {
+                    border-color: var(--primary) !important;
+                    background: rgba(253, 224, 71, 0.05) !important;
+                    box-shadow: 0 0 20px rgba(253, 224, 71, 0.1) !important;
+                }
+                .comanda-search-large::placeholder {
+                    letter-spacing: 0;
+                    font-size: 0.9rem;
+                    opacity: 0.3;
+                }
                 .modal-input {
                     width: 100%;
                     padding: 12px 16px;
@@ -198,7 +287,7 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
                     font-size: 0.7rem;
                     background: rgba(255,255,255,0.1);
                     padding: 2px 6px;
-                    border-radius: 4px;
+                    border-radius: 8px;
                     color: var(--text-muted);
                 }
                 /* Simple Switch CSS */
@@ -226,8 +315,8 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
                 }
                 input:checked + .slider { background-color: var(--primary); }
                 input:checked + .slider:before { transform: translateX(20px); }
-                .slider.round { border-radius: 24px; }
-                .slider.round:before { border-radius: 50%; }
+                .slider.round { border-radius: 8px; }
+                .slider.round:before { border-radius: 8px; }
             `}</style>
         </div>
     );

@@ -28,9 +28,13 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
             const session = sessions.find(s => s.id === lane.currentSessionId && s.isActive);
             if (session) {
                 const elapsed = now - session.startTime;
+                const hhmm = new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                 return (
                     <div className="lane-content active">
-                        <span className="lane-comanda">#{session.comanda}</span>
+                        <div className="lane-header-row">
+                            <span className="lane-comanda">#{session.comanda}</span>
+                            <span className="lane-started-at">{hhmm}</span>
+                        </div>
                         <span className="lane-timer">{formatTime(elapsed)}</span>
                         <div className="lane-progress-mini">
                             <div className="progress-bar" style={{ width: `${Math.min(100, (elapsed / 3600000) * 100)}%` }}></div>
@@ -95,7 +99,7 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
                 <div className="pistas-rows-group">
                     {/* Linhas 3-10 */}
                     <div className="pistas-container top-row">
-                        {lanes.slice(2, 10).map(lane => {
+                        {lanes.filter(l => l.type === 'BOL').slice(2, 10).map(lane => {
                             const num = lane.name.split(' ')[1];
                             return (
                                 <div key={lane.id} className={`perspective-lane ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
@@ -118,9 +122,9 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
                         <span className="alley-text">ÁREA DE CIRCULAÇÃO / LOUNGE</span>
                     </div>
 
-                    {/* Linhas 1-2 (Alinhadas abaixo da 3 e 4) */}
+                    {/* Linhas 1-2 + Sinuca ao lado */}
                     <div className="pistas-container bottom-row">
-                        {lanes.slice(0, 2).map(lane => {
+                        {lanes.filter(l => l.type === 'BOL').slice(0, 2).map(lane => {
                             const num = lane.name.split(' ')[1];
                             return (
                                 <div key={lane.id} className={`perspective-lane ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
@@ -137,13 +141,28 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
                                 </div>
                             );
                         })}
-                        {/* Placeholders para manter o alinhamento com as pistas de cima (3 a 10) */}
-                        <div className="pistas-placeholder"></div>
-                        <div className="pistas-placeholder"></div>
-                        <div className="pistas-placeholder"></div>
-                        <div className="pistas-placeholder"></div>
-                        <div className="pistas-placeholder"></div>
-                        <div className="pistas-placeholder"></div>
+                        
+                        {/* Mesa de Sinuca ao lado das pistas 1-2 */}
+                        <div className="sinuca-wrapper">
+                            {lanes.filter(l => l.type === 'SNK').map(lane => (
+                                <div key={lane.id} className={`sinuca-table-inline ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
+                                    <div className="sinuca-felt">
+                                        <div className="sinuca-pockets">
+                                            <span className="poc-tl"></span>
+                                            <span className="poc-tc"></span>
+                                            <span className="poc-tr"></span>
+                                            <span className="poc-bl"></span>
+                                            <span className="poc-bc"></span>
+                                            <span className="poc-br"></span>
+                                        </div>
+                                        <span className="sinuca-num">SNK</span>
+                                        {renderLaneContent(lane)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        {/* Removidos placeholders para o wrapper flexível fazer o trabalho */}
                     </div>
                 </div>
             </div>

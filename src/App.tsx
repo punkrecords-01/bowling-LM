@@ -3,7 +3,7 @@ import './App.css';
 import { useLanes } from './context/LaneContext';
 import Timer from './components/Timer';
 import SummaryModal from './components/SummaryModal';
-import { Lane, Session } from './types';
+import { Lane, Session, LaneType } from './types';
 import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import CenterInsights from './components/CenterInsights';
@@ -18,7 +18,9 @@ import MaintenanceModal from './components/MaintenanceModal';
 import HistoryView from './components/HistoryView';
 import UpcomingReservations from './components/UpcomingReservations';
 import LaneDetailModal from './components/LaneDetailModal';
-import { CheckIcon, WrenchIcon, AlertTriangleIcon } from './components/Icons';
+import ConsumptionReport from './components/ConsumptionReport';
+import PricingConfigModal from './components/PricingConfigModal';
+import { CheckIcon, WrenchIcon, AlertTriangleIcon, SettingsIcon } from './components/Icons';
 
 function AppContent() {
   const { lanes, sessions, reservations, openLane, closeLane, setMaintenance, clearMaintenance, convertReservationToLane } = useLanes();
@@ -29,7 +31,19 @@ function AppContent() {
   const [detailLaneId, setDetailLaneId] = React.useState<string | null>(null);
   const [checkingInReservationId, setCheckingInReservationId] = React.useState<string | null>(null);
   const [maintenanceTarget, setMaintenanceTarget] = React.useState<{ laneId: string, laneName: string } | null>(null);
-  const [printedReceipt, setPrintedReceipt] = React.useState<{ laneName: string, comanda: string, startTime: number, endTime: number } | null>(null);
+  const [showConsumptionReport, setShowConsumptionReport] = React.useState(false);
+  const [showPricingConfig, setShowPricingConfig] = React.useState(false);
+  const [printedReceipt, setPrintedReceipt] = React.useState<{ 
+    laneName: string, 
+    comanda: string, 
+    startTime: number, 
+    endTime: number, 
+    discountMinutes?: number, 
+    isBirthdayDiscount?: boolean,
+    laneType?: LaneType,
+    customerName?: string,
+    receiptNumber?: number
+  } | null>(null);
 
   const toLocalDateISO = (ms:number) => {
     const d = new Date(ms);
@@ -57,16 +71,21 @@ function AppContent() {
     }
   };
 
-  const confirmClose = () => {
+  const confirmClose = (opts?: { discountMinutes?: number; isBirthdayDiscount?: boolean }) => {
     if (closingLane) {
       const { lane, session } = closingLane;
-      closeLane(lane.id);
+      const receiptNumber = closeLane(lane.id, opts);
       setClosingLane(null);
       setPrintedReceipt({
         laneName: lane.name,
         comanda: session.comanda,
         startTime: session.startTime,
-        endTime: Date.now()
+        endTime: Date.now(),
+        discountMinutes: opts?.discountMinutes ?? session.discountMinutes ?? 0,
+        isBirthdayDiscount: opts?.isBirthdayDiscount ?? session.isBirthdayDiscount ?? false,
+        laneType: lane.type,
+        customerName: session.customerName,
+        receiptNumber
       });
     }
   };
@@ -114,16 +133,32 @@ function AppContent() {
           >
             Histórico
           </button>
+          <button
+            className="nav-item"
+            onClick={() => setShowConsumptionReport(true)}
+          >
+            📊 Relatório
+          </button>
         </nav>
 
         <AlertsSystem />
 
-        <div className="user-profile" onClick={logout} style={{ cursor: 'pointer' }} title="Clique para sair">
-          <div className="user-info">
-            <span className="user-name">{user.name}</span>
-            <span className="user-role">{user.role}</span>
+<div className="header-actions">
+          <button 
+            className="config-btn" 
+            onClick={() => setShowPricingConfig(true)}
+            title="Configurar Tarifas"
+          >
+            <SettingsIcon />
+          </button>
+          
+          <div className="user-profile" onClick={logout} style={{ cursor: 'pointer' }} title="Clique para sair">
+            <div className="user-info">
+              <span className="user-name">{user.name}</span>
+              <span className="user-role">{user.role}</span>
+            </div>
+            <div className="avatar">{user.name[0]}</div>
           </div>
-          <div className="avatar">{user.name[0]}</div>
         </div>
       </header>
 
@@ -177,8 +212,15 @@ function AppContent() {
                   <div key={lane.id} className={`lane-card ${cardStatus} ${isPaused ? 'active-maintenance' : ''}`} onClick={() => setDetailLaneId(lane.id)} style={{ cursor: 'pointer' }}>
                     <div className="lane-header-top">
                       <div className="lane-badge-group">
-                        <span className="small-lane-label">{lane.name.split(' ')[1]}</span>
+                        <span className={`small-lane-label ${lane.type === 'SNK' ? 'snk-label' : ''}`}>
+                          {lane.type === 'SNK' ? 'SNK' : lane.name.split(' ')[1]}
+                        </span>
                       </div>
+                      {lane.status === 'active' && session && (
+                        <div className="lane-simple-time">
+                          INÍCIO {new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        </div>
+                      )}
                     </div>
 
                     <div className="lane-body">
@@ -208,10 +250,15 @@ function AppContent() {
                             <div className="maintenance-content">
                               <span className="maintenance-title">EM MANUTENÇÃO</span>
                               <span className="maintenance-desc">
-                                {lane.isMaintenancePaused ? "Tempo Pausado" : lane.maintenanceReason}
+                                {lane.isMaintenancePaused ? "Tempo Pausado" : (lane.maintenanceReason || "Motivo não informado")}
                               </span>
                             </div>
                           </div>
+                          {!lane.isMaintenancePaused && lane.maintenanceReason && (
+                            <div className="maintenance-reason-tag">
+                              {lane.maintenanceReason}
+                            </div>
+                          )}
                           {lane.isMaintenancePaused && session && (
                             <div className="maintenance-session-overlay">
                               <div className="maintenance-session-info">
@@ -234,7 +281,7 @@ function AppContent() {
                           </span>
                           {nextRes && effectiveStatus === 'reserved' && (
                             <span className="next-res-hint">
-                              {new Date(nextRes.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(nextRes.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                             </span>
                           )}
                         </div>
@@ -302,14 +349,19 @@ function AppContent() {
         )}
 
         {activeTab === 'mapa' && (
-          <LaneMap onLaneClick={handleLaneAction} />
+          <LaneMap onLaneClick={setDetailLaneId} />
         )}
       </main>
 
-      {detailLaneId && (
+{showPricingConfig && (
+          <PricingConfigModal onClose={() => setShowPricingConfig(false)} />
+        )}
+
+        {detailLaneId && (
         <LaneDetailModal
           laneId={detailLaneId}
           onClose={() => setDetailLaneId(null)}
+          onOpen={(id) => setOpeningLaneId(id)}
         />
       )}
 
@@ -353,6 +405,11 @@ function AppContent() {
           comanda={printedReceipt.comanda}
           startTime={printedReceipt.startTime}
           endTime={printedReceipt.endTime}
+          discountMinutes={printedReceipt.discountMinutes}
+          isBirthdayDiscount={printedReceipt.isBirthdayDiscount}
+          laneType={printedReceipt.laneType}
+          customerName={printedReceipt.customerName}
+          receiptNumber={printedReceipt.receiptNumber}
           onClose={() => setPrintedReceipt(null)}
         />
       )}
@@ -363,9 +420,15 @@ function AppContent() {
           comanda={closingLane.session.comanda}
           startTime={closingLane.session.startTime}
           endTime={Date.now()}
+          laneType={closingLane.lane.type}
+          customerName={closingLane.session.customerName}
           onConfirmed={confirmClose}
           onFinish={() => setClosingLane(null)}
         />
+      )}
+
+      {showConsumptionReport && (
+        <ConsumptionReport onClose={() => setShowConsumptionReport(false)} />
       )}
     </div>
   );

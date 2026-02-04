@@ -64,7 +64,7 @@ const UpcomingReservations: React.FC<{ onCheckIn: (resId: string) => void }> = (
                             <div className="res-mini-time">
                                 <ClockIcon width={12} height={12} />
                                 <span>
-                                    {isInitialDelay ? 'ATRASADA!' : (res.status === 'delayed' ? `ATRASO (${minutesSinceStart}m)` : new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}
+                                    {isInitialDelay ? 'ATRASADA!' : (res.status === 'delayed' ? `ATRASO (${minutesSinceStart}m)` : new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }))}
                                 </span>
                             </div>
                             <div className="res-mini-info">
