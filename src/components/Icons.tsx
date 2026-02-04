@@ -263,13 +263,12 @@ export const MoveIcon: React.FC<IconProps> = (props) => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth="3"
     strokeLinecap="round"
     strokeLinejoin="round"
     {...props}
   >
-    <path d="M11 19l-7-7 7-7" />
-    <path d="M4 12h16" />
-    <path d="M13 5l7 7-7 7" />
+    <path d="M4 10a3 3 0 0 1 3-3h13m0 0l-4-4m4 4l-4 4" />
+    <path d="M20 14a3 3 0 0 1-3 3H4m0 0l4-4m-4 4l4 4" />
   </svg>
 );

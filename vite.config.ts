@@ -9,7 +9,7 @@ export default defineConfig(async () => ({
   plugins: [react()],
 
   // Use relative base path for maximum compatibility (GitHub Pages, Tauri, etc.)
-  base: './',
+  base: '/',
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
