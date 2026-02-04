@@ -133,12 +133,6 @@ function AppContent() {
           >
             Histórico
           </button>
-          <button
-            className="nav-item"
-            onClick={() => setShowConsumptionReport(true)}
-          >
-            📊 Relatório
-          </button>
         </nav>
 
         <AlertsSystem />
@@ -254,7 +248,7 @@ function AppContent() {
                               </span>
                             </div>
                           </div>
-                          {!lane.isMaintenancePaused && lane.maintenanceReason && (
+                          {lane.isMaintenancePaused && lane.maintenanceReason && (
                             <div className="maintenance-reason-tag">
                               {lane.maintenanceReason}
                             </div>

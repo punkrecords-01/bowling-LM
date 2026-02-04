@@ -3,6 +3,7 @@ import { useLanes } from '../context/LaneContext';
 import { LogEntry } from '../types';
 import ReceiptView from './ReceiptView';
 import CustomDatePicker from './CustomDatePicker';
+import ConsumptionReport from './ConsumptionReport';
 import { EyeIcon, PrinterIcon, ChartIcon } from './Icons';
 import './HistoryView.css';
 
@@ -19,6 +20,7 @@ const HistoryView: React.FC = () => {
     const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
     const [reprintData, setReprintData] = useState<any>(null);
     const [selectedLogsForPrint, setSelectedLogsForPrint] = useState<string[]>([]);
+    const [showConsumptionReport, setShowConsumptionReport] = useState(false);
 
     const filteredLogs = useMemo(() => {
         return logs.filter(log => {
@@ -27,8 +29,11 @@ const HistoryView: React.FC = () => {
                 log.userName.toLowerCase().includes(searchTerm.toLowerCase());
 
             let categoryMatch = true;
-            if (filter === 'Pistas') categoryMatch = log.action.includes('Pista');
-            else if (filter === 'Reservas') categoryMatch = log.action.includes('Reserva');
+            if (filter === 'Pistas') {
+                categoryMatch = log.action.includes('Pista') || 
+                                log.action.includes('Manutenção') || 
+                                log.action.includes('Liberar');
+            } else if (filter === 'Reservas') categoryMatch = log.action.includes('Reserva');
             else if (filter === 'Fila') categoryMatch = log.action.includes('Fila') || log.action.includes('Transição');
 
             return dateMatch && termMatch && categoryMatch;
@@ -139,6 +144,9 @@ const HistoryView: React.FC = () => {
                             Imprimir Selecionados: {selectedLogsForPrint.length}
                         </button>
                     )}
+                    <button className="primary-btn secondary-style" onClick={() => setShowConsumptionReport(true)} style={{ marginRight: '10px' }}>
+                        📊 Relatório de Consumo
+                    </button>
                     <button className="primary-btn" onClick={handlePrintShiftReport}>
                         <ChartIcon width={16} height={16} style={{marginRight: '8px'}} />
                         Relatório do Dia
@@ -270,6 +278,10 @@ const HistoryView: React.FC = () => {
                     {...reprintData}
                     onClose={() => setReprintData(null)}
                 />
+            )}
+
+            {showConsumptionReport && (
+                <ConsumptionReport onClose={() => setShowConsumptionReport(false)} />
             )}
         </section>
     );
