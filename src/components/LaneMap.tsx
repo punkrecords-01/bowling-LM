@@ -39,6 +39,11 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
                         <div className="lane-progress-mini">
                             <div className="progress-bar" style={{ width: `${Math.min(100, (elapsed / 3600000) * 100)}%` }}></div>
                         </div>
+                        {lane.maintenanceReason && (
+                            <div className="maintenance-active-badge">
+                                🛠️ {lane.maintenanceReason}
+                            </div>
+                        )}
                     </div>
                 );
             }

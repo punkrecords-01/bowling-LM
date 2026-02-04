@@ -202,7 +202,7 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                     )}
 
                     {/* Maintenance Info */}
-                    {lane.status === 'maintenance' && (
+                    {(lane.status === 'maintenance' || lane.maintenanceReason) && (
                         <div className="detail-section maintenance-alert">
                             <h4><WrenchIcon width={16} height={16} /> Status de Manutenção</h4>
                             <p className="maintenance-reason">{lane.maintenanceReason || 'Sem motivo especificado'}</p>
@@ -262,31 +262,30 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                 .section-header-row h4 { margin-bottom: 0 !important; }
 
                 .transfer-toggle {
-                    background: rgba(var(--primary-rgb), 0.15);
-                    border: 2px solid var(--primary);
+                    background: rgba(var(--primary-rgb), 0.08);
+                    border: 1px solid rgba(var(--primary-rgb), 0.4);
                     color: var(--primary);
-                    padding: 8px 16px;
-                    border-radius: 12px;
-                    font-size: 0.9rem;
-                    font-weight: 800;
+                    padding: 6px 14px;
+                    border-radius: 10px;
+                    font-size: 0.8rem;
+                    font-weight: 700;
                     display: flex;
                     align-items: center;
-                    gap: 10px;
+                    gap: 8px;
                     cursor: pointer;
-                    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    transition: all 0.2s ease;
                     text-transform: uppercase;
-                    letter-spacing: 0.5px;
+                    letter-spacing: 0.3px;
                 }
                 .transfer-toggle:hover {
-                    background: var(--primary);
-                    color: black;
-                    transform: translateY(-2px) scale(1.02);
-                    box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.3);
+                    background: rgba(var(--primary-rgb), 0.15);
+                    border-color: var(--primary);
+                    transform: translateY(-1px);
                 }
                 .transfer-toggle.active {
-                    background: #ff4444;
-                    color: white;
-                    border-color: #ff4444;
+                    background: rgba(255, 68, 68, 0.1);
+                    color: #ff6666;
+                    border-color: #ff6666;
                 }
 
                 .transfer-grid-container {
