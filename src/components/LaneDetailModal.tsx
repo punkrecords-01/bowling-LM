@@ -89,7 +89,7 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                                         onClick={() => setIsTransferring(!isTransferring)}
                                     >
                                         <MoveIcon width={16} height={16} />
-                                        {isTransferring ? 'Cancelar troca' : 'Mudar de pista'}
+                                        {isTransferring ? 'Cancelar transferência' : 'Transferir pista'}
                                     </button>
                                 )}
                             </div>
@@ -262,28 +262,31 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                 .section-header-row h4 { margin-bottom: 0 !important; }
 
                 .transfer-toggle {
-                    background: rgba(var(--primary-rgb), 0.1);
-                    border: 1px solid rgba(var(--primary-rgb), 0.3);
+                    background: rgba(var(--primary-rgb), 0.15);
+                    border: 2px solid var(--primary);
                     color: var(--primary);
-                    padding: 6px 14px;
-                    border-radius: 10px;
-                    font-size: 0.85rem;
-                    font-weight: 600;
+                    padding: 8px 16px;
+                    border-radius: 12px;
+                    font-size: 0.9rem;
+                    font-weight: 800;
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    gap: 10px;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 }
                 .transfer-toggle:hover {
-                    background: rgba(var(--primary-rgb), 0.2);
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                }
-                .transfer-toggle.active {
                     background: var(--primary);
                     color: black;
-                    border-color: var(--primary);
+                    transform: translateY(-2px) scale(1.02);
+                    box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.3);
+                }
+                .transfer-toggle.active {
+                    background: #ff4444;
+                    color: white;
+                    border-color: #ff4444;
                 }
 
                 .transfer-grid-container {
