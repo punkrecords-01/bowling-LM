@@ -8,8 +8,8 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
   plugins: [react()],
 
-  // Force correct base path when running in GitHub Actions for Pages deploy
-  base: process.env.GITHUB_ACTIONS ? '/bowling-LM/' : '/',
+  // Use relative base path for maximum compatibility (GitHub Pages, Tauri, etc.)
+  base: './',
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

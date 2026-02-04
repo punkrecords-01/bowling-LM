@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanes } from '../context/LaneContext';
-import { ClockIcon, UserIcon, WrenchIcon, SwapIcon } from './Icons';
+import { ClockIcon, UserIcon, WrenchIcon, MoveIcon } from './Icons';
 import './Modal.css';
 import CustomTimePicker from './CustomTimePicker';
 
@@ -88,7 +88,7 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                                         className={`transfer-toggle ${isTransferring ? 'active' : ''}`}
                                         onClick={() => setIsTransferring(!isTransferring)}
                                     >
-                                        <SwapIcon width={14} height={14} />
+                                        <MoveIcon width={16} height={16} />
                                         {isTransferring ? 'Cancelar troca' : 'Mudar de pista'}
                                     </button>
                                 )}
@@ -100,7 +100,7 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                                         <div className="transfer-confirmation fade-in">
                                             <div className="transfer-header">
                                                 <div className="transfer-title-group">
-                                                    <SwapIcon width={16} height={16} />
+                                                    <MoveIcon width={16} height={16} />
                                                     <span>Confirmar Troca</span>
                                                 </div>
                                             </div>
@@ -130,7 +130,7 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                                         <>
                                             <div className="transfer-header">
                                                 <div className="transfer-title-group">
-                                                    <SwapIcon width={16} height={16} />
+                                                    <MoveIcon width={16} height={16} />
                                                     <span>Selecionar Nova Pista</span>
                                                 </div>
                                                 <span className="comanda-badge">Comanda #{currentSession.comanda}</span>
@@ -262,21 +262,23 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
                 .section-header-row h4 { margin-bottom: 0 !important; }
 
                 .transfer-toggle {
-                    background: rgba(255,255,255,0.05);
-                    border: 1px solid rgba(255,255,255,0.1);
-                    color: var(--text-muted);
-                    padding: 4px 10px;
-                    border-radius: 8px;
-                    font-size: 0.75rem;
+                    background: rgba(var(--primary-rgb), 0.1);
+                    border: 1px solid rgba(var(--primary-rgb), 0.3);
+                    color: var(--primary);
+                    padding: 6px 14px;
+                    border-radius: 10px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
                     display: flex;
                     align-items: center;
-                    gap: 6px;
+                    gap: 8px;
                     cursor: pointer;
                     transition: all 0.2s;
                 }
                 .transfer-toggle:hover {
-                    background: rgba(255,255,255,0.1);
-                    color: white;
+                    background: rgba(var(--primary-rgb), 0.2);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
                 }
                 .transfer-toggle.active {
                     background: var(--primary);
