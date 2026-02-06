@@ -334,7 +334,8 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
             status: 'pending'
         };
         setReservations(prev => [...prev, newRes]);
-        addLog('Nova Reserva', `Pista: ${res.laneId || 'Qualquer'}, Cliente: ${res.customerName}`, undefined, res.laneId);
+        const details = res.observation ? ` | Obs: ${res.observation}` : '';
+        addLog('Nova Reserva', `Pista: ${res.laneId || 'Qualquer'}, Cliente: ${res.customerName}${details}`, undefined, res.laneId);
     };
 
     const cancelReservation = (id: string) => {

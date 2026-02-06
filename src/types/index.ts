@@ -30,6 +30,7 @@ export interface Reservation {
     startTime: number; // timestamp
     endTime: number; // timestamp
     status: 'pending' | 'arrived' | 'delayed' | 'no-show' | 'cancelled' | 'fulfilled';
+    observation?: string;
 }
 
 export interface Session {

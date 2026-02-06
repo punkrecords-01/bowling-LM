@@ -28,6 +28,19 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
             const session = sessions.find(s => s.id === lane.currentSessionId && s.isActive);
             if (session) {
                 const elapsed = now - session.startTime;
+                
+                if (lane.isMaintenancePaused) {
+                    return (
+                        <div className="lane-content maintenance active-paused">
+                            <span className="maintenance-icon">🛠️</span>
+                            <span className="maintenance-text">PAUSADA</span>
+                            {lane.maintenanceReason && (
+                                <span className="maintenance-subtext">{lane.maintenanceReason}</span>
+                            )}
+                        </div>
+                    );
+                }
+
                 const hhmm = new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                 return (
                     <div className="lane-content active">

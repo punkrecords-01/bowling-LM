@@ -241,6 +241,25 @@
     border: 1px solid var(--border-color);
 }
 
+.res-observation {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--primary);
+    line-height: 1.4;
+    word-break: break-word;
+    width: 100%;
+}
+
+.obs-label {
+    font-weight: 700;
+    color: var(--text-main);
+    margin-right: 0.25rem;
+}
+
 /* Actions Section */
 .res-actions-section {
     display: flex;
@@ -371,7 +390,8 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     width: 100%;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -383,7 +403,8 @@
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     border-color: var(--primary);
     outline: none;
     background: var(--bg-card-hover);

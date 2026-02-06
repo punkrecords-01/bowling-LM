@@ -546,6 +546,18 @@
     color: var(--text-muted);
 }
 
+.maintenance-subtext {
+    font-size: 0.55rem;
+    color: var(--status-error);
+    margin-top: 2px;
+    font-weight: 500;
+    max-width: 80%;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .maintenance-active-badge {
     position: absolute;
     bottom: -6px;

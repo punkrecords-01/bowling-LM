@@ -37,7 +37,7 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
         <div className="modal-overlay">
             <div className="modal-content fade-in" style={{ maxWidth: '480px', borderRadius: '8px', background: '#18181b', border: '1px solid var(--border-strong)' }}>
                 <header className="modal-header" style={{ borderBottom: '1px solid var(--border-color)', padding: '24px' }}>
-                    <h3 style={{ fontFamily: "'Space Mono', monospace", color: 'var(--primary)', fontSize: '1.25rem' }}>Iniciar Sess�o</h3>
+                    <h3 style={{ fontFamily: "'Space Mono', monospace", color: 'var(--primary)', fontSize: '1.25rem' }}>Iniciar Sess�o</h3>
                     <button className="close-btn" onClick={onClose} style={{ color: 'var(--text-muted)' }}>&times;</button>
                 </header>
 
@@ -45,6 +45,12 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
                     <div className="reservation-summary" style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
                         <div style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>Cliente</div>
                         <div style={{ fontSize: '1.2rem', fontWeight: 800 }}>{reservation ? reservation.customerName : 'Desconhecido'}</div>
+                        {reservation?.observation && (
+                            <>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-muted)', marginTop: '8px', marginBottom: '4px' }}>Observação</div>
+                                <div style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>{reservation.observation}</div>
+                            </>
+                        )}
                     </div>
 
                     <div className="form-group" style={{ marginBottom: '24px', position: 'relative' }}>

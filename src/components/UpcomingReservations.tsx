@@ -74,6 +74,11 @@ const UpcomingReservations: React.FC<{ onCheckIn: (resId: string) => void }> = (
                                 </div>
                                 <span className="res-mini-lane">{lane ? lane.name : 'Qualquer pista'}</span>
                             </div>
+                            {res.observation && (
+                                <div className="res-mini-observation" title={res.observation}>
+                                    {res.observation}
+                                </div>
+                            )}
                             <div className="res-mini-actions">
                                 {shouldShowCritical ? (
                                     <div className="delayed-decision-group">

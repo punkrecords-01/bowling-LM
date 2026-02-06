@@ -22,6 +22,7 @@ const AgendaView: React.FC = () => {
     const [customerName, setCustomerName] = useState('');
     const [date, setDate] = useState(toLocalDateISO(Date.now()));
     const [time, setTime] = useState('');
+    const [observation, setObservation] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,6 +38,7 @@ const AgendaView: React.FC = () => {
             customerName,
             startTime: start.getTime(),
             endTime: end.getTime(),
+            observation: observation.trim() || undefined,
         });
 
         setIsAdding(false);
@@ -44,6 +46,7 @@ const AgendaView: React.FC = () => {
         setDate(toLocalDateISO(Date.now()));
         setTime('');
         setLaneId('');
+        setObservation('');
     };
 
     const sortedReservations = [...reservations].sort((a, b) => a.startTime - b.startTime);
@@ -139,6 +142,17 @@ const AgendaView: React.FC = () => {
                             />
                         </div>
 
+                        <div className="form-group">
+                            <label>Observação</label>
+                            <textarea
+                                value={observation}
+                                onChange={e => setObservation(e.target.value)}
+                                placeholder="Notas adicionais (opcional)"
+                                rows={3}
+                                style={{ resize: 'none' }}
+                            />
+                        </div>
+
                         <div className="form-actions">
                             <button type="button" className="secondary-btn" onClick={() => setIsAdding(false)}>
                                 Voltar
@@ -195,6 +209,11 @@ const AgendaView: React.FC = () => {
                                     <div className="lane-info">
                                         <span className="lane-badge">{lane?.name || 'Qualquer Pista'}</span>
                                     </div>
+                                    {res.observation && (
+                                        <div className="res-observation">
+                                            <span className="obs-label">Obs:</span> {res.observation}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="res-actions-section">

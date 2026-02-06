@@ -49,6 +49,12 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                             <span className="label">Horário Original:</span>
                             <span className="value">{new Date(reservation.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
                         </div>
+                        {reservation.observation && (
+                            <div className="info-row">
+                                <span className="label">Obs:</span>
+                                <span className="value">{reservation.observation}</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group" style={{ marginBottom: '24px', position: 'relative' }}>
