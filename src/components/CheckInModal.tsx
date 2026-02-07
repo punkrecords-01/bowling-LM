@@ -7,29 +7,33 @@ import { useLanes } from '../context/LaneContext';
 interface CheckInModalProps {
     reservation: Reservation;
     onCancel: () => void;
-    onConfirm: (comanda: string, laneId: string) => void;
+    onConfirm: (comanda: string, laneIds: string[]) => void;
 }
 
 const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onConfirm }) => {
-    const { sessions, lanes } = useLanes();
+    const { lanes } = useLanes();
     const [comanda, setComanda] = useState('');
-    const [selectedLaneId, setSelectedLaneId] = useState(reservation.laneId || '');
+    const [selectedLaneIds, setSelectedLaneIds] = useState<string[]>(reservation.laneIds && reservation.laneIds.length > 0 ? reservation.laneIds : (reservation.laneId ? [reservation.laneId] : []));
     const [showComandaModal, setShowComandaModal] = useState(false);
     const [showLaneDropdown, setShowLaneDropdown] = useState(false);
     const [validationMsg, setValidationMsg] = useState<string | null>(null);
 
-    const selectedLane = lanes.find(l => l.id === selectedLaneId);
+    const toggleLane = (laneId: string) => {
+        setSelectedLaneIds(prev => 
+            prev.includes(laneId) 
+                ? prev.filter(id => id !== laneId)
+                : [...prev, laneId]
+        );
+    };
 
     const validate = (val: string) => {
         if (!val) return 'Selecione uma comanda para continuar.';
         const num = parseInt(val, 10);
-        if (isNaN(num) || num < 1 || num > 60) return 'Número inválido. Use 1–60.';
-        const inUse = sessions.some(s => s.isActive && s.comanda === val);
-        if (inUse) return `Comanda #${val} já está em uso.`;
+        if (isNaN(num)) return 'Número inválido.';
         return null;
     };
 
-    const isConfirmDisabled = !!validationMsg || !comanda || !selectedLaneId;
+    const isConfirmDisabled = !!validationMsg || !comanda || selectedLaneIds.length === 0;
 
     return (
         <div className="modal-overlay">
@@ -58,21 +62,21 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                     </div>
 
                     <div className="form-group" style={{ marginBottom: '24px', position: 'relative' }}>
-                        <label>Pista para Check-in</label>
+                        <label>Pistas para Check-in</label>
                         <div 
                             className={`custom-select ${showLaneDropdown ? 'open' : ''}`}
                             onClick={() => setShowLaneDropdown(!showLaneDropdown)}
                         >
                             <div className="selected-value">
-                                {selectedLane ? (
+                                {selectedLaneIds.length > 0 ? (
                                     <div className="lane-option-content">
-                                        <span className="lane-name">{selectedLane.name}</span>
-                                        {reservation.laneId === selectedLane.id && (
-                                            <span className="badge-reserved">RESERVADA</span>
-                                        )}
+                                        <span className="lane-count-badge">{selectedLaneIds.length}</span>
+                                        <span className="lane-selected-text">
+                                            {selectedLaneIds.length === 1 ? 'Pista selecionada' : 'Pistas selecionadas'}
+                                        </span>
                                     </div>
                                 ) : (
-                                    <span className="placeholder">Selecione uma pista...</span>
+                                    <span className="placeholder">Selecione as pistas...</span>
                                 )}
                                 <span className={`arrow ${showLaneDropdown ? 'up' : 'down'}`}>▼</span>
                             </div>
@@ -80,25 +84,30 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                             {showLaneDropdown && (
                                 <div className="dropdown-list">
                                     {lanes.map(lane => {
-                                        const isReservedForThis = reservation.laneId === lane.id;
+                                        const isReservedForThis = reservation.laneIds?.includes(lane.id) || reservation.laneId === lane.id;
                                         const isAvailable = lane.status === 'free' || lane.status === 'reserved';
                                         const isDisabled = !isAvailable && !isReservedForThis;
+                                        const isSelected = selectedLaneIds.includes(lane.id);
 
                                         return (
                                             <div 
                                                 key={lane.id} 
-                                                className={`dropdown-item ${selectedLaneId === lane.id ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                                className={`dropdown-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     if (!isDisabled) {
-                                                        setSelectedLaneId(lane.id);
-                                                        setShowLaneDropdown(false);
+                                                        toggleLane(lane.id);
                                                     }
                                                 }}
                                             >
                                                 <div className="lane-option-main">
-                                                    <span className="lane-name">{lane.name}</span>
-                                                    {isReservedForThis && <span className="badge-reserved">ORIGINAL</span>}
+                                                    <div className={`custom-checkbox-indicator ${isSelected ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}`}>
+                                                        {isSelected && <span className="check-mark">✓</span>}
+                                                    </div>
+                                                    <div className="lane-text-group">
+                                                        <span className="lane-name">{lane.name}</span>
+                                                        {isReservedForThis && <span className="badge-reserved-mini">RESERVA ORIGINAL</span>}
+                                                    </div>
                                                 </div>
                                                 <div className="lane-option-status">
                                                     {isDisabled ? (
@@ -109,7 +118,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                                                 </div>
                                             </div>
                                         );
-                                                                            })}
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -134,7 +143,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                             />
                             <button type="button" className="secondary-btn" onClick={() => setShowComandaModal(true)}>Selecionar</button>
                         </div>
-                        {validationMsg ? <div className="validation-error">{validationMsg}</div> : <div className="modal-note">Selecione ou digite uma comanda válida (1-60).</div>}
+                        {validationMsg ? <div className="validation-error">{validationMsg}</div> : <div className="modal-note">Selecione ou digite uma comanda numérica.</div>}
                     </div>
 
                     <div className="confirmation-warning">
@@ -151,7 +160,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
 
                 <footer className="modal-footer">
                     <button className="secondary-btn" onClick={() => { setComanda(''); setValidationMsg(null); onCancel(); }}>Cancelar</button>
-                    <button className="primary-btn" disabled={isConfirmDisabled} onClick={() => onConfirm(comanda, selectedLaneId)}>Confirmar e Iniciar</button>
+                    <button className="primary-btn" disabled={isConfirmDisabled} onClick={() => onConfirm(comanda, selectedLaneIds)}>Confirmar e Iniciar</button>
                 </footer>
             </div>
 
@@ -186,7 +195,24 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                 .lane-option-content {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
+                    gap: 12px;
+                }
+                .lane-count-badge {
+                    background: var(--primary);
+                    color: black;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 6px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.85rem;
+                    font-weight: 900;
+                }
+                .lane-selected-text {
+                    font-size: 0.9rem;
+                    font-weight: 700;
+                    color: white;
                 }
                 .badge-reserved {
                     background: var(--primary);
@@ -208,44 +234,88 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ reservation, onCancel, onCo
                     top: 100%;
                     left: -1px;
                     right: -1px;
-                    background: #1e293b; /* Dark slate 800 */
+                    background: #0f172a; /* Deeper slate */
                     border: 1px solid var(--primary);
                     border-top: none;
-                    border-bottom-left-radius: 8px;
-                    border-bottom-right-radius: 8px;
-                    z-index: 50;
-                    max-height: 250px;
+                    border-bottom-left-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                    z-index: 100;
+                    max-height: 280px;
                     overflow-y: auto;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+                    backdrop-filter: blur(10px);
                 }
                 .dropdown-item {
-                    padding: 12px 16px;
+                    padding: 10px 16px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    transition: background 0.1s;
-                    border-bottom: 1px solid rgba(255,255,255,0.05);
+                    transition: all 0.2s;
+                    border-bottom: 1px solid rgba(255,255,255,0.03);
+                    cursor: pointer;
                 }
                 .dropdown-item:last-child { border-bottom: none; }
                 .dropdown-item:hover:not(.disabled) {
-                    background: rgba(255,255,255,0.08);
+                    background: rgba(255,255,255,0.05);
                 }
                 .dropdown-item.selected {
-                    background: rgba(59, 130, 246, 0.1);
+                    background: rgba(253, 224, 71, 0.05);
                 }
                 .dropdown-item.disabled {
-                    opacity: 0.4;
+                    opacity: 0.3;
                     cursor: not-allowed;
                 }
                 .lane-option-main {
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    gap: 14px;
                 }
-                .lane-name { font-weight: 700; }
-                .lane-option-status { font-size: 0.75rem; font-weight: 600; }
-                .status-free { color: var(--status-free); }
-                .status-occupied { color: #ef4444; }
+                .custom-checkbox-indicator {
+                    width: 22px;
+                    height: 22px;
+                    border: 2px solid rgba(255,255,255,0.2);
+                    border-radius: 6px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s;
+                    background: rgba(0,0,0,0.2);
+                    flex-shrink: 0;
+                }
+                .custom-checkbox-indicator.checked {
+                    background: var(--primary);
+                    border-color: var(--primary);
+                    box-shadow: 0 0 10px rgba(253, 224, 71, 0.3);
+                }
+                .check-mark {
+                    color: black;
+                    font-weight: 900;
+                    font-size: 0.85rem;
+                }
+                .lane-text-group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                }
+                .lane-name { 
+                    font-weight: 700; 
+                    font-size: 0.95rem;
+                    color: white;
+                }
+                .badge-reserved-mini {
+                    font-size: 0.6rem;
+                    color: var(--primary);
+                    font-weight: 800;
+                    letter-spacing: 0.05em;
+                }
+                .lane-option-status { 
+                    font-size: 0.7rem; 
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                }
+                .status-free { color: var(--status-free); opacity: 0.8; }
+                .status-occupied { color: #ef4444; opacity: 0.8; }
 
                 .dropdown-list::-webkit-scrollbar { width: 6px; }
                 .dropdown-list::-webkit-scrollbar-track { background: transparent; }

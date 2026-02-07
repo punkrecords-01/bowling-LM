@@ -11,7 +11,16 @@ interface LaneDetailModalProps {
 }
 
 const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOpen }) => {
-    const { lanes, sessions, logs, reservations, updateSession, transferLane } = useLanes();
+    const { 
+        lanes, 
+        sessions, 
+        logs, 
+        reservations, 
+        updateSession, 
+        transferLane,
+        setReserved,
+        clearReserved 
+    } = useLanes();
     const lane = lanes.find(l => l.id === laneId);
     const [targetLaneId, setTargetLaneId] = useState('');
     const [isTransferring, setIsTransferring] = useState(false);
@@ -230,8 +239,14 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
 
                 <footer className="modal-footer">
                     <button className="secondary-btn" onClick={onClose}>Fechar</button>
+                    {lane.status === 'reserved' && (
+                         <button className="primary-btn-reserved" onClick={() => { clearReserved(laneId); onClose(); }}>Liberar Pista</button>
+                    )}
                     {lane.status === 'free' && (
-                         <button className="primary-btn" onClick={() => { onClose(); onOpen?.(laneId); }}>Abrir Pista</button>
+                        <>
+                            <button className="secondary-btn" onClick={() => { setReserved(laneId); onClose(); }}>Marcar Reservada</button>
+                            <button className="primary-btn" onClick={() => { onClose(); onOpen?.(laneId); }}>Abrir Pista</button>
+                        </>
                     )}
                 </footer>
             </div>
@@ -512,6 +527,15 @@ const LaneDetailModal: React.FC<LaneDetailModalProps> = ({ laneId, onClose, onOp
 
                 .birthday-group {
                     padding-top: 18px;
+                }
+                .primary-btn-reserved {
+                    background: var(--status-reserved);
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-weight: 700;
+                    cursor: pointer;
                 }
             `}</style>
         </div>

@@ -10,6 +10,7 @@ const WaitingListView: React.FC = () => {
     const [lanesReq, setLanesReq] = useState(1);
     const [table, setTable] = useState('');
     const [comanda, setComanda] = useState('');
+    const [placa, setPlaca] = useState('');
     const [showComandaModal, setShowComandaModal] = useState(false);
     const [entryToDelete, setEntryToDelete] = useState<any>(null);
     const [pendingEntry, setPendingEntry] = useState<any>(null);
@@ -21,8 +22,14 @@ const WaitingListView: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Use comanda or table as identifier since name is removed
-        const identifier = comanda ? `Comanda #${comanda}` : (table ? `Mesa ${table}` : 'Grupo Sem Nome');
-        setPendingEntry({ name: identifier, lanesRequested: lanesReq, table: table || '', comanda: comanda || '' });
+        const identifier = placa ? `Placa ${placa}` : (comanda ? `Comanda #${comanda}` : (table ? `Mesa ${table}` : 'Grupo Sem Nome'));
+        setPendingEntry({ 
+            name: identifier, 
+            lanesRequested: lanesReq, 
+            table: table || '', 
+            comanda: comanda || '',
+            placa: placa || '' 
+        });
     };
 
     const confirmAdd = () => {
@@ -31,11 +38,13 @@ const WaitingListView: React.FC = () => {
                 pendingEntry.name,
                 pendingEntry.lanesRequested,
                 pendingEntry.table || undefined,
-                pendingEntry.comanda || undefined
+                pendingEntry.comanda || undefined,
+                pendingEntry.placa || undefined
             );
             setLanesReq(1);
             setTable('');
             setComanda('');
+            setPlaca('');
             setPendingEntry(null);
         }
     };
@@ -49,6 +58,17 @@ const WaitingListView: React.FC = () => {
 
             <form className="waiting-form-premium" onSubmit={handleSubmit}>
                 <div className="form-grid">
+                    <div className="form-field">
+                        <label>Placa/Tag</label>
+                        <input
+                            type="text"
+                            placeholder="Nº Plaquinha"
+                            value={placa}
+                            onChange={e => setPlaca(e.target.value)}
+                            autoFocus
+                        />
+                    </div>
+
                     <div className="form-field">
                         <label>Comanda</label>
                         <div className="comanda-selector-trigger" onClick={() => setShowComandaModal(true)}>
@@ -73,7 +93,7 @@ const WaitingListView: React.FC = () => {
                             min="1"
                             max="5"
                             value={lanesReq}
-                            onChange={e => setLanesReq(parseInt(e.target.value))}
+                            onChange={e => setLanesReq(parseInt(e.target.value) || 1)}
                         />
                     </div>
                 </div>
@@ -116,11 +136,11 @@ const WaitingListView: React.FC = () => {
                         <div className="waiting-info">
                             <div className="customer-row">
                                 <span className="customer-name">{item.name}</span>
-                                <span className="pax-count">{item.lanesRequested} Pistas</span>
+                                <span className="pax-count-simple">• {item.lanesRequested} {item.lanesRequested === 1 ? 'Pista' : 'Pistas'}</span>
                             </div>
                             <div className="extra-info">
-                                {item.table && <span className="info-tag table">Mesa {item.table}</span>}
-                                {item.comanda && <span className="info-tag comanda">Comanda #{item.comanda}</span>}
+                                {item.table && item.name !== `Mesa ${item.table}` && <span className="info-label">Mesa {item.table}</span>}
+                                {item.comanda && item.name !== `Comanda #${item.comanda}` && <span className="info-label">Comanda #{item.comanda}</span>}
                             </div>
                         </div>
                         <div className="waiting-status">

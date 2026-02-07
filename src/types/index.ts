@@ -19,13 +19,16 @@ export interface WaitingCustomer {
     lanesRequested: number;
     table?: string;
     comanda?: string;
+    placa?: string;
     joinedAt: number;
     estimatedWaitTime: number; // minutes
 }
 
 export interface Reservation {
     id: string;
-    laneId?: string;
+    laneId?: string; // Legacy/Main lane
+    laneIds?: string[]; // Multiple lanes support
+    lanesRequested?: number; // How many lanes needed
     customerName: string;
     startTime: number; // timestamp
     endTime: number; // timestamp

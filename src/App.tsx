@@ -20,10 +20,27 @@ import UpcomingReservations from './components/UpcomingReservations';
 import LaneDetailModal from './components/LaneDetailModal';
 import ConsumptionReport from './components/ConsumptionReport';
 import PricingConfigModal from './components/PricingConfigModal';
-import { CheckIcon, WrenchIcon, AlertTriangleIcon, SettingsIcon } from './components/Icons';
+import { 
+  CheckIcon, 
+  WrenchIcon, 
+  AlertTriangleIcon, 
+  SettingsIcon,
+  CalendarIcon 
+} from './components/Icons';
 
 function AppContent() {
-  const { lanes, sessions, reservations, openLane, closeLane, setMaintenance, clearMaintenance, convertReservationToLane } = useLanes();
+  const { 
+    lanes, 
+    sessions, 
+    reservations, 
+    openLane, 
+    closeLane, 
+    setMaintenance, 
+    clearMaintenance, 
+    setReserved,
+    clearReserved,
+    convertReservationToLane 
+  } = useLanes();
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = React.useState('lanes');
   const [closingLane, setClosingLane] = React.useState<{ lane: Lane, session: Session } | null>(null);
@@ -191,19 +208,10 @@ function AppContent() {
                 const isSameDay = nextRes && toLocalDateISO(nextRes.startTime) === toLocalDateISO(nowMs);
                 const isReservedSoon = nextRes && isSameDay && (nextRes.startTime - nowMs < WINDOW_MS);
 
-                // If lane was previously marked 'reserved' but there's no actual reservation today, treat as free
-                let effectiveStatus = lane.status;
-                if (lane.status === 'reserved') {
-                  const hasDirectToday = !!directRes && toLocalDateISO(directRes.startTime) === toLocalDateISO(nowMs);
-                  effectiveStatus = hasDirectToday ? 'reserved' : 'free';
-                }
-                if (lane.status === 'free' && isReservedSoon) effectiveStatus = 'reserved';
-
-                const isPaused = lane.status === 'active' && lane.isMaintenancePaused;
-                const cardStatus = (lane.status === 'maintenance' || isPaused) ? 'maintenance' : effectiveStatus;
+                const cardStatus = (lane.status === 'active' && lane.isMaintenancePaused) ? 'maintenance' : lane.status;
 
                 return (
-                  <div key={lane.id} className={`lane-card ${cardStatus} ${isPaused ? 'active-maintenance' : ''}`} onClick={() => setDetailLaneId(lane.id)} style={{ cursor: 'pointer' }}>
+                  <div key={lane.id} className={`lane-card ${cardStatus} ${lane.isMaintenancePaused ? 'active-maintenance' : ''}`} onClick={() => setDetailLaneId(lane.id)} style={{ cursor: 'pointer' }}>
                     <div className="lane-header-top">
                       <div className="lane-badge-group">
                         <span className={`small-lane-label ${lane.type === 'SNK' ? 'snk-label' : ''}`}>
@@ -271,13 +279,8 @@ function AppContent() {
                       ) : (
                         <div className="free-state-container">
                           <span className="status-text">
-                            {effectiveStatus === 'reserved' ? 'Pista Reservada' : 'Disponível'}
+                            {lane.status === 'reserved' ? 'Pista Reservada' : 'Disponível'}
                           </span>
-                          {nextRes && effectiveStatus === 'reserved' && (
-                            <span className="next-res-hint">
-                              {new Date(nextRes.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-                            </span>
-                          )}
                         </div>
                       )}
                     </div>
@@ -294,11 +297,40 @@ function AppContent() {
                       ) : (
                         <>
                           <button
-                            className={`lane-action-main ${lane.status === 'active' ? 'active' : 'free'}`}
-                            onClick={(e) => { e.stopPropagation(); handleLaneAction(lane.id); }}
+                            className={`lane-action-main ${lane.status === 'active' ? 'active' : (lane.status === 'reserved' ? 'reserved' : 'free')}`}
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              if (lane.status === 'reserved') {
+                                // Se for reserva manual, abre o modal de abertura (check-in manual)
+                                setOpeningLaneId(lane.id);
+                              } else {
+                                handleLaneAction(lane.id);
+                              }
+                            }}
                           >
-                            {lane.status === 'active' ? 'Finalizar' : 'Abrir Pista'}
+                            {lane.status === 'active' ? 'Finalizar' : (lane.status === 'reserved' ? 'Abrir Pista' : 'Abrir Pista')}
                           </button>
+
+                          {lane.status === 'reserved' && (
+                            <button
+                              className="lane-action-tool"
+                              title="Liberar Bloqueio"
+                              style={{ color: 'var(--status-error)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                              onClick={(e) => { e.stopPropagation(); clearReserved(lane.id); }}
+                            >
+                              &times;
+                            </button>
+                          )}
+
+                          {lane.status === 'free' && (
+                            <button
+                              className="lane-action-tool"
+                              title="Reservar Manual"
+                              onClick={(e) => { e.stopPropagation(); setReserved(lane.id); }}
+                            >
+                              <CalendarIcon width={16} height={16} />
+                            </button>
+                          )}
 
                           <button
                             className="lane-action-tool"
@@ -363,8 +395,8 @@ function AppContent() {
         <CheckInModal
           reservation={reservations.find(r => r.id === checkingInReservationId)!}
           onCancel={() => setCheckingInReservationId(null)}
-          onConfirm={(comanda, selectedLaneId) => {
-            convertReservationToLane(checkingInReservationId, comanda, selectedLaneId);
+          onConfirm={(comanda, selectedLaneIds) => {
+            convertReservationToLane(checkingInReservationId, comanda, selectedLaneIds);
             setCheckingInReservationId(null);
           }}
         />
@@ -376,7 +408,7 @@ function AppContent() {
           onClose={() => setOpeningLaneId(null)}
           onConfirm={(comanda, reservationId) => {
             if (reservationId) {
-              convertReservationToLane(reservationId, comanda, openingLaneId);
+              convertReservationToLane(reservationId, comanda, [openingLaneId]);
             } else {
               openLane(openingLaneId, comanda);
             }

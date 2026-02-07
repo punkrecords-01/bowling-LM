@@ -83,18 +83,18 @@ const UpcomingReservations: React.FC<{ onCheckIn: (resId: string) => void }> = (
                                 {shouldShowCritical ? (
                                     <div className="delayed-decision-group">
                                         <button 
-                                            className="res-status-btn delay-keep" 
-                                            onClick={() => updateReservationStatus(res.id, 'delayed')}
-                                            title="Manter como Atrasada"
+                                            className="res-status-btn arrive" 
+                                            onClick={() => onCheckIn(res.id)}
+                                            style={{ flex: 1.2 }}
                                         >
-                                            {res.status === 'delayed' ? 'Manter' : 'Atrasar'}
+                                            Check-in
                                         </button>
                                         <button 
                                             className="res-status-btn no-show" 
                                             onClick={() => updateReservationStatus(res.id, 'no-show')}
-                                            title="Marcar No-Show"
+                                            style={{ flex: 1 }}
                                         >
-                                            No-Show
+                                            Não veio
                                         </button>
                                     </div>
                                 ) : res.status === 'pending' || res.status === 'delayed' ? (

@@ -302,6 +302,18 @@
     filter: brightness(1.1);
 }
 
+.btn-edit {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    border: 1px solid var(--border-strong);
+}
+
+.btn-edit:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 .minimal-select {
     background: transparent;
     border: 1px solid var(--border-color);
@@ -346,6 +358,25 @@
 }
 
 /* Form Styles */
+.form-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.form-row > .form-group {
+    margin-bottom: 1rem;
+}
+
+.form-row > .form-group:first-child {
+    flex: 2;
+}
+
+.form-row > .form-group:last-child {
+    flex: 1;
+}
+
 .reservation-form-overlay {
     position: fixed;
     inset: 0;
@@ -373,6 +404,8 @@
     font-size: 1.5rem;
     margin-bottom: 2rem;
     color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .form-group {
@@ -390,16 +423,50 @@
 }
 
 .form-group input,
-.form-group select,
+.form-group select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 0 1.25rem;
+    height: 52px;
+    border-radius: 12px;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.form-group input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 .form-group textarea {
     width: 100%;
-    background: var(--bg-card);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
-    padding: 1rem;
-    border-radius: 8px;
+    padding: 1.25rem;
+    border-radius: 12px;
     color: var(--text-main);
     font-size: 1rem;
     transition: var(--transition-base);
+}
+
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='0.5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+.form-group textarea {
+    height: auto;
+    padding: 1rem;
 }
 
 .form-group input:focus,

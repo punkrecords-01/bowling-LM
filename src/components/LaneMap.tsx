@@ -23,7 +23,17 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
         return `${hours > 0 ? hours + ':' : ''}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
+    const getLaneStatus = (lane: any) => {
+        if (lane.status === 'active') return 'active';
+        if (lane.status === 'maintenance') return 'maintenance';
+        if (lane.status === 'reserved') return 'reserved';
+
+        return 'free';
+    };
+
     const renderLaneContent = (lane: any) => {
+        const status = getLaneStatus(lane);
+        
         if (lane.status === 'active') {
             const session = sessions.find(s => s.id === lane.currentSessionId && s.isActive);
             if (session) {
@@ -62,27 +72,7 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
             }
         }
 
-        // Dynamic reservation check
-        const WINDOW_MS = 10 * 60000;
-
-        // 1. Direct reservation
-        const directRes = reservations
-            .filter(r => r.laneId === lane.id && (r.status === 'pending' || r.status === 'arrived'))
-            .sort((a, b) => a.startTime - b.startTime)[0];
-
-        // 2. Unassigned pool
-        const unassignedPool = reservations
-            .filter(r => !r.laneId && (r.status === 'pending' || r.status === 'arrived'))
-            .sort((a, b) => a.startTime - b.startTime);
-
-        const freeLanes = lanes.filter(l => l.status === 'free');
-        const myFreeIndex = freeLanes.findIndex(l => l.id === lane.id);
-        const claimedByUnassigned = myFreeIndex !== -1 && unassignedPool[myFreeIndex];
-
-        const nextRes = directRes || claimedByUnassigned;
-        const isReservedSoon = nextRes && (nextRes.startTime - now < WINDOW_MS);
-
-        if (isReservedSoon || lane.status === 'reserved') {
+        if (status === 'reserved') {
             return (
                 <div className="lane-content reserved">
                     <span className="lane-status-text">RESERVADA</span>
@@ -119,8 +109,9 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
                     <div className="pistas-container top-row">
                         {lanes.filter(l => l.type === 'BOL').slice(2, 10).map(lane => {
                             const num = lane.name.split(' ')[1];
+                            const status = getLaneStatus(lane);
                             return (
-                                <div key={lane.id} className={`perspective-lane ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
+                                <div key={lane.id} className={`perspective-lane ${status}`} onClick={() => onLaneClick(lane.id)}>
                                     <div className="lane-track">
                                         <div className="pin-deck">
                                             <div className="pins">{'·'.repeat(3)}</div>
@@ -144,8 +135,9 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
                     <div className="pistas-container bottom-row">
                         {lanes.filter(l => l.type === 'BOL').slice(0, 2).map(lane => {
                             const num = lane.name.split(' ')[1];
+                            const status = getLaneStatus(lane);
                             return (
-                                <div key={lane.id} className={`perspective-lane ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
+                                <div key={lane.id} className={`perspective-lane ${status}`} onClick={() => onLaneClick(lane.id)}>
                                     <div className="lane-track">
                                         <div className="pin-deck">
                                             <div className="pins">{'·'.repeat(3)}</div>
@@ -162,22 +154,25 @@ const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
                         
                         {/* Mesa de Sinuca ao lado das pistas 1-2 */}
                         <div className="sinuca-wrapper">
-                            {lanes.filter(l => l.type === 'SNK').map(lane => (
-                                <div key={lane.id} className={`sinuca-table-inline ${lane.status}`} onClick={() => onLaneClick(lane.id)}>
-                                    <div className="sinuca-felt">
-                                        <div className="sinuca-pockets">
-                                            <span className="poc-tl"></span>
-                                            <span className="poc-tc"></span>
-                                            <span className="poc-tr"></span>
-                                            <span className="poc-bl"></span>
-                                            <span className="poc-bc"></span>
-                                            <span className="poc-br"></span>
+                            {lanes.filter(l => l.type === 'SNK').map(lane => {
+                                const status = getLaneStatus(lane);
+                                return (
+                                    <div key={lane.id} className={`sinuca-table-inline ${status}`} onClick={() => onLaneClick(lane.id)}>
+                                        <div className="sinuca-felt">
+                                            <div className="sinuca-pockets">
+                                                <span className="poc-tl"></span>
+                                                <span className="poc-tc"></span>
+                                                <span className="poc-tr"></span>
+                                                <span className="poc-bl"></span>
+                                                <span className="poc-bc"></span>
+                                                <span className="poc-br"></span>
+                                            </div>
+                                            <span className="sinuca-num">SNK</span>
+                                            {renderLaneContent(lane)}
                                         </div>
-                                        <span className="sinuca-num">SNK</span>
-                                        {renderLaneContent(lane)}
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                         
                         {/* Removidos placeholders para o wrapper flexível fazer o trabalho */}

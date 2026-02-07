@@ -15,11 +15,14 @@ interface LaneContextType {
     updateSession: (sessionId: string, updates: Partial<Session>) => void;
     setMaintenance: (laneId: string, reason: string) => void;
     clearMaintenance: (laneId: string) => void;
+    setReserved: (laneId: string) => void;
+    clearReserved: (laneId: string) => void;
     addReservation: (reservation: Omit<Reservation, 'id' | 'status'>) => void;
+    editReservation: (id: string, updates: Partial<Reservation>) => void;
     cancelReservation: (id: string) => void;
     updateReservationStatus: (id: string, status: Reservation['status']) => void;
-    convertReservationToLane: (resId: string, comanda: string, laneId?: string) => void;
-    addToWaitingList: (name: string, lanesRequested: number, table?: string, comanda?: string) => void;
+    convertReservationToLane: (resId: string, comanda: string, laneIds: string[]) => void;
+    addToWaitingList: (name: string, lanesRequested: number, table?: string, comanda?: string, placa?: string) => void;
     removeFromWaitingList: (id: string) => void;
     transferLane: (fromLaneId: string, toLaneId: string) => void;
     getNextReceiptNumber: () => number;
@@ -85,18 +88,16 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const { user } = useAuth();
 
-    // Clean up stale 'reserved' lane statuses when reservations change (e.g., persisted state)
+    // Reset any 'reserved' status to 'free' globally - as requested to remove automatic reservation system
     useEffect(() => {
-        setLanes(prev => prev.map(l => {
-            if (l.status !== 'reserved') return l;
-            const hasTodayReservation = reservations.some(r =>
-                (r.status === 'pending' || r.status === 'arrived') &&
-                r.laneId === l.id &&
-                toLocalDateISO(r.startTime) === toLocalDateISO(Date.now())
-            );
-            return hasTodayReservation ? l : { ...l, status: 'free' };
-        }));
-    }, [reservations]);
+        setLanes(prev => {
+            const hasReserved = prev.some(l => l.status === 'reserved');
+            if (hasReserved) {
+                return prev.map(l => l.status === 'reserved' ? { ...l, status: 'free' } : l);
+            }
+            return prev;
+        });
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('boliche_lanes', JSON.stringify(lanes));
@@ -153,7 +154,8 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const matchIndex = prev.findIndex(item => item.comanda === comanda);
             if (matchIndex !== -1) {
                 const match = prev[matchIndex];
-                const contextDesc = `Cliente ${match.name} movido da Mesa ${match.table || 'N/A'} para Pista ${laneId.split('-')[1]} (#${comanda})`;
+                const friendlyLane = laneId.startsWith('snk') ? `Sinuca ${laneId.split('-')[1].padStart(2, '0')}` : `Pista ${laneId.split('-')[1].padStart(2, '0')}`;
+                const contextDesc = `Cliente ${match.name} movido da Mesa ${match.table || 'N/A'} para ${friendlyLane} (#${comanda})`;
                 
                 addLog('Transição Fila -> Pista', contextDesc, undefined, laneId);
 
@@ -294,6 +296,18 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addLog('Liberar Pista', `Pista: ${laneId}`, undefined, laneId);
     };
 
+    const setReserved = (laneId: string) => {
+        setLanes(prev => prev.map(l => l.id === laneId ? { ...l, status: 'reserved' } : l));
+        const lane = lanes.find(l => l.id === laneId);
+        addLog('Bloqueio Manual', `Pista: ${lane?.name || laneId} marcada como Reservada (Manual)`, undefined, laneId);
+    };
+
+    const clearReserved = (laneId: string) => {
+        setLanes(prev => prev.map(l => l.id === laneId ? { ...l, status: 'free' } : l));
+        const lane = lanes.find(l => l.id === laneId);
+        addLog('Liberar Pista', `Pista: ${lane?.name || laneId} desbloqueada (Manual)`, undefined, laneId);
+    };
+
     const transferLane = (fromLaneId: string, toLaneId: string) => {
         const fromLane = lanes.find(l => l.id === fromLaneId);
         const toLane = lanes.find(l => l.id === toLaneId);
@@ -335,42 +349,56 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         setReservations(prev => [...prev, newRes]);
         const details = res.observation ? ` | Obs: ${res.observation}` : '';
-        addLog('Nova Reserva', `Pista: ${res.laneId || 'Qualquer'}, Cliente: ${res.customerName}${details}`, undefined, res.laneId);
+        const laneDesc = res.laneId 
+            ? (res.laneId.startsWith('snk') ? `Sinuca ${res.laneId.split('-')[1].padStart(2, '0')}` : `Pista ${res.laneId.split('-')[1].padStart(2, '0')}`) 
+            : `${res.lanesRequested || 1} pistas`;
+        addLog('Nova Reserva', `${laneDesc}, Cliente: ${res.customerName}${details}`, undefined, res.laneId);
+    };
+
+    const editReservation = (id: string, updates: Partial<Reservation>) => {
+        const res = reservations.find(r => r.id === id);
+        setReservations(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
+        addLog('Editar Reserva', `Cliente: ${res?.customerName || id}`, updates);
     };
 
     const cancelReservation = (id: string) => {
         const res = reservations.find(r => r.id === id);
         if (!res) return;
         setReservations(prev => prev.map(r => r.id === id ? { ...r, status: 'cancelled' } : r));
-        addLog('Cancelar Reserva', `Reserva: ${id}`);
+        addLog('Cancelar Reserva', `Cliente: ${res.customerName}`);
     };
 
     const updateReservationStatus = (id: string, status: Reservation['status']) => {
+        const res = reservations.find(r => r.id === id);
+        const statusMap: Record<string, string> = {
+            'pending': 'Pendente',
+            'arrived': 'Chegou',
+            'delayed': 'Atrasada',
+            'no-show': 'Não Compareceu',
+            'cancelled': 'Cancelada',
+            'fulfilled': 'Concluída'
+        };
         setReservations(prev => prev.map(r => r.id === id ? { ...r, status } : r));
-        addLog('Atualizar Reserva', `ID: ${id}, Status: ${status}`);
+        addLog('Atualizar Reserva', `Cliente: ${res?.customerName || id}, Status: ${statusMap[status] || status}`);
     };
 
-    const convertReservationToLane = (resId: string, comanda: string, laneId?: string) => {
+    const convertReservationToLane = (resId: string, comanda: string, laneIds: string[]) => {
         const res = reservations.find(r => r.id === resId);
-        if (!res) return;
+        if (!res || laneIds.length === 0) return;
 
-        let effectiveLaneId = laneId || res.laneId;
-        if (!effectiveLaneId) {
-            // Pick first free lane
-            const firstFree = lanes.find(l => l.status === 'free');
-            if (firstFree) {
-                effectiveLaneId = firstFree.id;
-            }
-        }
+        laneIds.forEach(laneId => {
+            openLane(laneId, comanda, res.customerName);
+        });
 
-        if (!effectiveLaneId) {
-            console.error("Nenhuma pista disponível para conversão");
-            return;
-        }
-
-        openLane(effectiveLaneId, comanda);
-        setReservations(prev => prev.map(r => r.id === resId ? { ...r, status: 'fulfilled', laneId: effectiveLaneId } : r));
-        addLog('Converter Reserva', `Reserva: ${resId} para Pista ${effectiveLaneId}, Comanda #${comanda}`, undefined, effectiveLaneId);
+        setReservations(prev => prev.map(r => r.id === resId ? { 
+            ...r, 
+            status: 'fulfilled', 
+            laneIds: laneIds,
+            laneId: laneIds[0] // For backward compatibility
+        } : r));
+        
+        const friendlyLanes = laneIds.map(id => id.startsWith('snk') ? `Sinuca ${id.split('-')[1].padStart(2, '0')}` : `Pista ${id.split('-')[1].padStart(2, '0')}`).join(', ');
+        addLog('Converter Reserva', `Cliente: ${res.customerName} -> ${friendlyLanes}, Comanda #${comanda}`);
     };
 
     const getAvgSessionTime = () => {
@@ -422,19 +450,20 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return sorted;
     };
 
-    const addToWaitingList = (name: string, lanesRequested: number, table?: string, comanda?: string) => {
+    const addToWaitingList = (name: string, lanesRequested: number, table?: string, comanda?: string, placa?: string) => {
         const newEntry: WaitingCustomer = {
             id: crypto.randomUUID(),
             name,
             lanesRequested,
             table,
             comanda,
+            placa,
             joinedAt: Date.now(),
             estimatedWaitTime: 0
         };
 
         setWaitingList(prev => updateWaitTimes([...prev, newEntry]));
-        addLog('Fila de Espera', `Adicionado: ${name} (${lanesRequested} pistas)${table ? `, Mesa: ${table}` : ''}${comanda ? `, Comanda: ${comanda}` : ''}`);
+        addLog('Fila de Espera', `Adicionado: ${name} (${lanesRequested} pistas)${table ? `, Mesa: ${table}` : ''}${comanda ? `, Comanda: ${comanda}` : ''}${placa ? `, Placa: ${placa}` : ''}`);
     };
 
     // Recalculate when lanes change
@@ -450,7 +479,8 @@ export const LaneProvider: React.FC<{ children: React.ReactNode }> = ({ children
         <LaneContext.Provider value={{
             lanes, sessions, reservations, waitingList, logs, receiptCounter,
             openLane, closeLane, updateSession, setMaintenance, clearMaintenance,
-            addReservation, cancelReservation, updateReservationStatus, convertReservationToLane,
+            setReserved, clearReserved,
+            addReservation, editReservation, cancelReservation, updateReservationStatus, convertReservationToLane,
             addToWaitingList, removeFromWaitingList, transferLane, getNextReceiptNumber
         }}>
             {children}

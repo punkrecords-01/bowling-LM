@@ -1,8 +1,8 @@
 .consumption-report-modal {
     background: var(--bg-card);
     border-radius: 8px;
-    width: 90%;
-    max-width: 700px;
+    width: 95%;
+    max-width: 900px;
     max-height: 90vh;
     display: flex;
     flex-direction: column;

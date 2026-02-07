@@ -2,6 +2,87 @@
     padding: 10px;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Toggle Premium */
+.view-toggle-premium {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    margin-right: 8px;
+}
+
+.view-toggle-premium .toggle-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.view-toggle-premium .toggle-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.view-toggle-premium .toggle-btn.active {
+    background: var(--primary);
+    color: black;
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+/* Embedded Report Style */
+.embedded-report-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+
+.consumption-report-standalone {
+    background: transparent;
+    padding: 24px;
+    box-shadow: none;
+    max-width: none;
+    width: 100%;
+}
+
+.report-controls-mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.report-controls-mini label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .history-controls {
     display: flex;
     flex-direction: column;

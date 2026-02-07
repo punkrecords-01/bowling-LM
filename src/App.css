@@ -217,13 +217,19 @@
 }
 
 .lane-card.reserved { 
-  background: linear-gradient(135deg, rgba(161, 161, 170, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-color: rgba(161, 161, 170, 0.2);
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(251, 146, 60, 0.05) 100%);
+  border-color: rgba(251, 146, 60, 0.6);
+  box-shadow: 0 4px 20px rgba(251, 146, 60, 0.1);
+}
+
+.lane-card.reserved::before { 
+  background: var(--status-reserved); 
+  box-shadow: 0 0 12px var(--status-reserved); 
 }
 
 .lane-card.maintenance { 
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-color: rgba(239, 68, 68, 0.2);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%);
+  border-color: rgba(239, 68, 68, 0.6);
 }
 
 .lane-card:hover {
@@ -498,6 +504,19 @@
   transform: translateY(-1px);
 }
 
+.lane-action-main.reserved {
+  background: rgba(251, 146, 60, 0.1);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.lane-action-main.reserved:hover {
+  background: #fb923c;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(251, 146, 60, 0.3);
+}
+
 .lane-action-main.maintenance-active {
   background: rgba(239, 68, 68, 0.1);
   color: var(--status-error);
@@ -725,6 +744,12 @@
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--text-muted);
   color: var(--text-main);
+}
+
+.lane-action-tool[title="Reservar Manual"]:hover {
+  border-color: #fb923c;
+  color: #fb923c;
+  background: rgba(251, 146, 60, 0.05);
 }
 
 .lane-action-tool.active {

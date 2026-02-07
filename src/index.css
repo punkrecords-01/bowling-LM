@@ -16,7 +16,7 @@
   /* Status Colors */
   --status-free: #ffffff;    
   --status-active: #3b82f6;  
-  --status-reserved: #a1a1aa; 
+  --status-reserved: #fb923c; /* Laranja âmbar para diferenciar de livre */
   --status-warning: #fde047; 
   --status-error: #ef4444;   
 

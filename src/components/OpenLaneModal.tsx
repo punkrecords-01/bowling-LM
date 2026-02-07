@@ -21,7 +21,6 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
     const today = new Date().toISOString().split('T')[0];
 
     const availableComandas = Array.from({ length: 60 }, (_, i) => (i + 1).toString())
-        .filter(num => !sessions.some(s => s.isActive && s.comanda === num))
         .filter(num => num.includes(comandaSearch));
 
     // Filter today's reservations that are not yet fulfilled/cancelled
@@ -36,13 +35,8 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
             return false;
         }
         const num = parseInt(comanda, 10);
-        if (isNaN(num) || num < 1 || num > 60) {
-            setError('A comanda deve ser entre 1 e 60.');
-            return false;
-        }
-        const inUse = sessions.some(s => s.isActive && s.comanda === comanda);
-        if (inUse) {
-            setError(`A comanda #${comanda} já está em uso em outra pista.`);
+        if (isNaN(num)) {
+            setError('A comanda deve ser um número.');
             return false;
         }
         if (isReservation && !selectedResId) {
@@ -72,19 +66,14 @@ const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfir
                             <label style={{ margin: 0, fontSize: '1rem' }}>Digite ou Selecione a Comanda</label>
                             <input 
                                 type="text" 
-                                placeholder="FILTRAR NÚMERO..." 
+                                placeholder="DIGITE O NÚMERO..." 
                                 className="comanda-search-large"
                                 value={comandaSearch}
                                 onChange={e => {
                                     const val = e.target.value.replace(/\D/g, '');
-                                    const numVal = parseInt(val, 10);
-                                    if (val === '' || (numVal >= 1 && numVal <= 60)) {
-                                        setComandaSearch(val);
-                                        // Auto-select if exact match found
-                                        if (availableComandas.includes(val)) {
-                                            setComanda(val);
-                                        }
-                                    }
+                                    setComandaSearch(val);
+                                    setComanda(val);
+                                    setError(null);
                                 }}
                                 autoFocus
                             />

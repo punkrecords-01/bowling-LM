@@ -112,22 +112,25 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
                 }
                 .picker-label {
                     display: block;
-                    margin-bottom: 8px;
-                    font-size: 0.85rem;
-                    color: rgba(255,255,255,0.6);
+                    font-size: 0.7rem;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    color: var(--text-muted);
+                    margin-bottom: 0.5rem;
+                    letter-spacing: 0.1em;
                 }
                 .picker-trigger {
-                    background: var(--bg-card);
+                    background: rgba(255, 255, 255, 0.03);
                     border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    padding: 12px 16px;
+                    border-radius: 12px;
+                    padding: 0 1.25rem;
                     cursor: pointer;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     transition: all 0.2s;
                     color: white;
-                    height: 44px;
+                    height: 56px;
                 }
                 .picker-trigger:hover {
                     border-color: var(--border-strong);

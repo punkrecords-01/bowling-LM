@@ -3,13 +3,14 @@ import { useLanes } from '../context/LaneContext';
 import ResToLaneModal from './ResToLaneModal';
 import CustomDatePicker from './CustomDatePicker';
 import CustomTimePicker from './CustomTimePicker';
-import { ClockIcon, UserIcon, CheckIcon, PlayIcon } from './Icons';
+import { ClockIcon, UserIcon, CheckIcon, PlayIcon, EditIcon } from './Icons';
 import { toLocalDateISO } from '../utils/pricing';
 import './AgendaView.css';
 
 const AgendaView: React.FC = () => {
-    const { lanes, reservations, addReservation, updateReservationStatus, convertReservationToLane } = useLanes();
+    const { lanes, reservations, addReservation, editReservation, updateReservationStatus, convertReservationToLane } = useLanes();
     const [isAdding, setIsAdding] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [dateFilter, setDateFilter] = useState<string>(toLocalDateISO(Date.now()));
@@ -19,10 +20,33 @@ const AgendaView: React.FC = () => {
 
     // Form state
     const [laneId, setLaneId] = useState<string>('');
+    const [lanesRequested, setLanesRequested] = useState<number>(1);
     const [customerName, setCustomerName] = useState('');
     const [date, setDate] = useState(toLocalDateISO(Date.now()));
     const [time, setTime] = useState('');
     const [observation, setObservation] = useState('');
+
+    const handleEdit = (res: any) => {
+        setEditingId(res.id);
+        setLaneId(res.laneId || '');
+        setLanesRequested(res.lanesRequested || 1);
+        setCustomerName(res.customerName);
+        setDate(toLocalDateISO(res.startTime));
+        setTime(new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+        setObservation(res.observation || '');
+        setIsAdding(true);
+    };
+
+    const resetForm = () => {
+        setIsAdding(false);
+        setEditingId(null);
+        setCustomerName('');
+        setLanesRequested(1);
+        setDate(toLocalDateISO(Date.now()));
+        setTime('');
+        setLaneId('');
+        setObservation('');
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,20 +57,27 @@ const AgendaView: React.FC = () => {
 
         const end = new Date(start.getTime() + 60 * 60000); // Default 1h
 
-        addReservation({
-            laneId: laneId || undefined,
-            customerName,
-            startTime: start.getTime(),
-            endTime: end.getTime(),
-            observation: observation.trim() || undefined,
-        });
+        if (editingId) {
+            editReservation(editingId, {
+                laneId: laneId || undefined,
+                lanesRequested,
+                customerName,
+                startTime: start.getTime(),
+                endTime: end.getTime(),
+                observation: observation.trim() || undefined,
+            });
+        } else {
+            addReservation({
+                laneId: laneId || undefined,
+                lanesRequested,
+                customerName,
+                startTime: start.getTime(),
+                endTime: end.getTime(),
+                observation: observation.trim() || undefined,
+            });
+        }
 
-        setIsAdding(false);
-        setCustomerName('');
-        setDate(toLocalDateISO(Date.now()));
-        setTime('');
-        setLaneId('');
-        setObservation('');
+        resetForm();
     };
 
     const sortedReservations = [...reservations].sort((a, b) => a.startTime - b.startTime);
@@ -63,7 +94,7 @@ const AgendaView: React.FC = () => {
             case 'pending': return 'Aguardando';
             case 'arrived': return 'Check-in';
             case 'delayed': return 'Atrasada';
-            case 'no-show': return 'No-show';
+            case 'no-show': return 'Não veio';
             case 'cancelled': return 'Cancelada';
             case 'fulfilled': return 'Iniciada';
             default: return status;
@@ -102,17 +133,31 @@ const AgendaView: React.FC = () => {
                 <div className="reservation-form-overlay">
                     <form className="reservation-form" onSubmit={handleSubmit}>
                         <div className="form-header">
-                            <h3>Nova Reserva</h3>
+                            <h3>{editingId ? 'Editar Reserva' : 'Nova Reserva'}</h3>
                         </div>
 
-                        <div className="form-group">
-                            <label>Pista</label>
-                            <select value={laneId} onChange={e => setLaneId(e.target.value)}>
-                                <option value="">(Qualquer Pista)</option>
-                                {lanes.map(l => (
-                                    <option key={l.id} value={l.id}>{l.name}</option>
-                                ))}
-                            </select>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Pista Preferencial</label>
+                                <select value={laneId} onChange={e => setLaneId(e.target.value)}>
+                                    <option value="">(Qualquer Pista)</option>
+                                    {lanes.map(l => (
+                                        <option key={l.id} value={l.id}>{l.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Qtd. Pistas</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="10"
+                                    value={lanesRequested}
+                                    onChange={e => setLanesRequested(parseInt(e.target.value))}
+                                    required
+                                />
+                            </div>
                         </div>
 
                         <div className="form-group">
@@ -154,11 +199,11 @@ const AgendaView: React.FC = () => {
                         </div>
 
                         <div className="form-actions">
-                            <button type="button" className="secondary-btn" onClick={() => setIsAdding(false)}>
+                            <button type="button" className="secondary-btn" onClick={resetForm}>
                                 Voltar
                             </button>
                             <button type="submit" className="primary-btn">
-                                Agendar
+                                {editingId ? 'Salvar Alterações' : 'Agendar'}
                             </button>
                         </div>
                     </form>
@@ -168,8 +213,8 @@ const AgendaView: React.FC = () => {
             {convertingResId && (
                 <ResToLaneModal
                     reservationId={convertingResId}
-                    onConfirm={(laneId, comanda) => {
-                        convertReservationToLane(convertingResId, comanda, laneId);
+                    onConfirm={(laneIds, comanda) => {
+                        convertReservationToLane(convertingResId, comanda, laneIds);
                         setConvertingResId(null);
                     }}
                     onClose={() => setConvertingResId(null)}
@@ -207,7 +252,10 @@ const AgendaView: React.FC = () => {
                                         <span className="customer-name">{res.customerName}</span>
                                     </div>
                                     <div className="lane-info">
-                                        <span className="lane-badge">{lane?.name || 'Qualquer Pista'}</span>
+                                        <span className="lane-badge">
+                                            {lane?.name || 'Qualquer'} 
+                                            {res.lanesRequested > 1 && ` (+${res.lanesRequested - 1})`}
+                                        </span>
                                     </div>
                                     {res.observation && (
                                         <div className="res-observation">
@@ -219,6 +267,13 @@ const AgendaView: React.FC = () => {
                                 <div className="res-actions-section">
                                     {!isTerminal && (
                                         <>
+                                            <button
+                                                className="btn-action btn-edit"
+                                                onClick={() => handleEdit(res)}
+                                            >
+                                                <EditIcon width={14} height={14} />
+                                                <span>Editar</span>
+                                            </button>
                                             {res.status === 'pending' && (
                                                 <button
                                                     className="btn-action btn-arrive"
@@ -246,7 +301,7 @@ const AgendaView: React.FC = () => {
                                                     <option value="" disabled>Opções</option>
                                                     <option value="pending">Aguardando</option>
                                                     <option value="delayed">Atrasada</option>
-                                                    <option value="no-show">No-show</option>
+                                                    <option value="no-show">Não veio</option>
                                                     <option value="cancelled">Cancelar</option>
                                                 </select>
                                             </div>

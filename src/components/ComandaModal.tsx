@@ -12,28 +12,37 @@ const ComandaModal: React.FC<ComandaModalProps> = ({ onSelect, onClose }) => {
 
     const filtered = comandas.filter(c => c.startsWith(search));
 
+    const handleConfirm = () => {
+        if (search) {
+            onSelect(search);
+        }
+    };
+
     return (
         <div className="modal-overlay">
             <div className="comanda-modal">
                 <header className="modal-header">
-                    <h3>Selecionar Comanda (1-60)</h3>
+                    <h3>Selecionar Comanda</h3>
                 </header>
 
-                <input
-                    type="text"
-                    className="comanda-search"
-                    placeholder="Digitar número..."
-                    value={search}
-                    onChange={e => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        if (val === '' || (parseInt(val) >= 1 && parseInt(val) <= 60)) {
+                <div style={{ display: 'flex', gap: '8px', padding: '0 20px 20px' }}>
+                    <input
+                        type="text"
+                        className="comanda-search"
+                        placeholder="Digitar número..."
+                        style={{ flex: 1 }}
+                        value={search}
+                        onChange={e => {
+                            const val = e.target.value.replace(/\D/g, '');
                             setSearch(val);
-                        }
-                    }}
-                    autoFocus
-                />
+                        }}
+                        onKeyDown={e => e.key === 'Enter' && handleConfirm()}
+                        autoFocus
+                    />
+                    <button className="primary-btn" onClick={handleConfirm} disabled={!search}>OK</button>
+                </div>
 
-                <div className="comanda-grid">
+                <div className="comanda-grid" style={{ maxHeight: '200px', overflowY: 'auto' }}>
                     {filtered.map(num => (
                         <button
                             key={num}

@@ -5,32 +5,36 @@ import './Modal.css';
 interface ResToLaneModalProps {
     reservationId: string;
     onClose: () => void;
-    onConfirm: (laneId: string, comanda: string) => void;
+    onConfirm: (laneIds: string[], comanda: string) => void;
 }
 
 const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose, onConfirm }) => {
     const { lanes, reservations, sessions } = useLanes();
     const reservation = reservations.find(r => r.id === reservationId);
     
-    const [selectedLaneId, setSelectedLaneId] = useState(reservation?.laneId || '');
+    const [selectedLaneIds, setSelectedLaneIds] = useState<string[]>(reservation?.laneId ? [reservation.laneId] : []);
     const [comanda, setComanda] = useState('');
     const [showLaneDropdown, setShowLaneDropdown] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const selectedLane = lanes.find(l => l.id === selectedLaneId);
-    const availableComandas = Array.from({ length: 60 }, (_, i) => (i + 1).toString())
-        .filter(c => !sessions.some(s => s.isActive && s.comanda === c));
-
     const handleConfirm = () => {
-        if (!selectedLaneId) {
-            setError('Selecione uma pista para esta reserva.');
+        if (selectedLaneIds.length === 0) {
+            setError('Selecione pelo menos uma pista.');
             return;
         }
         if (!comanda) {
-            setError('Selecione uma comanda.');
+            setError('Digite o número da comanda.');
             return;
         }
-        onConfirm(selectedLaneId, comanda);
+        onConfirm(selectedLaneIds, comanda);
+    };
+
+    const toggleLane = (laneId: string) => {
+        setSelectedLaneIds(prev => 
+            prev.includes(laneId) 
+                ? prev.filter(id => id !== laneId)
+                : [...prev, laneId]
+        );
     };
 
     return (
@@ -54,22 +58,21 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
                     </div>
 
                     <div className="form-group" style={{ marginBottom: '24px', position: 'relative' }}>
-                        <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>Selecione a Pista</label>
+                        <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>Pistas Selecionadas ({selectedLaneIds.length})</label>
                         
                         <div 
                             className={`custom-select ${showLaneDropdown ? 'open' : ''}`}
                             onClick={() => setShowLaneDropdown(!showLaneDropdown)}
                         >
                             <div className="selected-value">
-                                {selectedLane ? (
+                                {selectedLaneIds.length > 0 ? (
                                     <div className="lane-option-content">
-                                        <span className="lane-name">{selectedLane.name}</span>
-                                        {reservation?.laneId === selectedLane.id && (
-                                            <span className="badge-reserved">RESERVADA</span>
-                                        )}
+                                        <span className="lane-name">
+                                            {selectedLaneIds.map(id => lanes.find(l => l.id === id)?.name).join(', ')}
+                                        </span>
                                     </div>
                                 ) : (
-                                    <span className="placeholder">Escolher Pista...</span>
+                                    <span className="placeholder">Escolher Pistas...</span>
                                 )}
                                 <span className={`arrow ${showLaneDropdown ? 'up' : 'down'}`}>
                                     <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -79,35 +82,36 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
                             </div>
 
                             {showLaneDropdown && (
-                                <div className="dropdown-list">
+                                <div className="dropdown-list" style={{ maxHeight: '200px', overflowY: 'auto' }}>
                                     {lanes.map(lane => {
                                         const isReservedForThis = reservation?.laneId === lane.id;
                                         const isAvailable = lane.status === 'free' || lane.status === 'reserved';
-                                        const isDisabled = !isAvailable && !isReservedForThis;
+                                        const isSelected = selectedLaneIds.includes(lane.id);
+                                        const isDisabled = !isAvailable && !isReservedForThis && !isSelected;
 
                                         return (
                                             <div 
                                                 key={lane.id} 
-                                                className={`dropdown-item ${selectedLaneId === lane.id ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                                className={`dropdown-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     if (!isDisabled) {
-                                                        setSelectedLaneId(lane.id);
-                                                        setShowLaneDropdown(false);
+                                                        toggleLane(lane.id);
                                                         setError(null);
                                                     }
                                                 }}
                                             >
                                                 <div className="lane-option-main">
                                                     <span className="lane-name">{lane.name}</span>
-                                                    {isReservedForThis && <span className="badge-reserved">ORIGINAL</span>}
+                                                    {isReservedForThis && <span style={{fontSize: '0.6rem', background: 'var(--primary)', color: 'black', padding: '1px 4px', borderRadius: '4px', marginLeft: '8px'}}>PREFERENCIAL</span>}
+                                                    {isSelected && <span style={{marginLeft: 'auto', fontWeight: 900, color: 'var(--primary)'}}>✓</span>}
                                                 </div>
                                                 <div className="lane-option-status">
                                                     {isDisabled ? (
-                                                        <span className="status-occupied">{lane.status.toUpperCase()}</span>
-                                                    ) : (
+                                                        <span className="status-occupied">OCUPADA</span>
+                                                    ) : !isSelected ? (
                                                         <span className="status-free">LIVRE</span>
-                                                    )}
+                                                    ) : null}
                                                 </div>
                                             </div>
                                         );
@@ -117,40 +121,27 @@ const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose,
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>Comanda (1-60)</label>
-                        <div className="comanda-grid-mini" style={{ 
-                            display: 'grid', 
-                            gridTemplateColumns: 'repeat(6, 1fr)', 
-                            gap: '8px', 
-                            maxHeight: '160px', 
-                            overflowY: 'auto',
-                            padding: '12px',
-                            background: 'rgba(0,0,0,0.3)',
-                            borderRadius: '8px',
-                            border: '1px solid var(--border-color)'
-                        }}>
-                            {availableComandas.map(num => (
-                                <button
-                                    key={num}
-                                    type="button"
-                                    onClick={() => setComanda(num)}
-                                    style={{
-                                        padding: '10px 0',
-                                        background: comanda === num ? 'var(--primary)' : 'rgba(255,255,255,0.03)',
-                                        color: comanda === num ? 'black' : 'white',
-                                        border: '1px solid',
-                                        borderColor: comanda === num ? 'var(--primary)' : 'transparent',
-                                        borderRadius: '8px',
-                                        fontWeight: 900,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    {num}
-                                </button>
-                            ))}
-                        </div>
+                    <div className="form-group" style={{ marginBottom: '24px' }}>
+                        <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>Número da Comanda</label>
+                        <input 
+                            type="number"
+                            className="custom-input"
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '8px',
+                                color: 'white',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                outline: 'none'
+                            }}
+                            value={comanda}
+                            onChange={(e) => setComanda(e.target.value)}
+                            placeholder="Digite o número da comanda"
+                            autoFocus
+                        />
                     </div>
 
                     {error && <p style={{ color: 'var(--status-error)', fontSize: '0.75rem', fontWeight: 700, marginTop: '16px', textAlign: 'center' }}>{error}</p>}

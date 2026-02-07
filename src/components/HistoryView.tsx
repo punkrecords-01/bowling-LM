@@ -20,7 +20,7 @@ const HistoryView: React.FC = () => {
     const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
     const [reprintData, setReprintData] = useState<any>(null);
     const [selectedLogsForPrint, setSelectedLogsForPrint] = useState<string[]>([]);
-    const [showConsumptionReport, setShowConsumptionReport] = useState(false);
+    const [viewMode, setViewMode] = useState<'audit' | 'consumption'>('audit');
 
     const filteredLogs = useMemo(() => {
         return logs.filter(log => {
@@ -39,35 +39,6 @@ const HistoryView: React.FC = () => {
             return dateMatch && termMatch && categoryMatch;
         });
     }, [logs, searchTerm, filter, selectedDate]);
-
-    const handlePrintShiftReport = () => {
-        // Simple shift report simulation
-        const todayLogs = logs.filter(l => toLocalDateISO(l.timestamp) === selectedDate);
-        const closures = todayLogs.filter(l => l.action === 'Fechar Pista');
-        const totalDuration = closures.reduce((acc, l) => acc + (l.details?.duration || 0), 0);
-
-        const reportWindow = window.open('', '_blank');
-        if (reportWindow) {
-            reportWindow.document.write(`
-                <html>
-                <head><title>Relatório de Turno - ${selectedDate}</title></head>
-                <body style="font-family: monospace; padding: 20px;">
-                    <h2>RELATÓRIO DE TURNO</h2>
-                    <p>Data: ${selectedDate}</p>
-                    <hr/>
-                    <p>Total de Pistas Encerradas: ${closures.length}</p>
-                    <p>Tempo Total de Jogo: ${Math.round(totalDuration / 60000)} min</p>
-                    <hr/>
-                    <h3>RESUMO DE ENCERRAMENTOS</h3>
-                    ${closures.map(l => `<p>${l.context} - ${Math.round(l.details?.duration / 60000)}min</p>`).join('')}
-                    <hr/>
-                    <p style="text-align: center;">STRIKE BOLICHE BAR</p>
-                </body>
-                </html>
-            `);
-            reportWindow.print();
-        }
-    };
 
     const handlePrintSelected = () => {
         if (selectedLogsForPrint.length === 0) return;
@@ -134,107 +105,129 @@ const HistoryView: React.FC = () => {
         <section className="history-view fade-in">
             <header className="section-header">
                 <div>
-                    <h2>Histórico Operacional</h2>
-                    <p className="subtitle">Auditoria e conferência de movimentos</p>
+                    <h2>Histórico e Relatórios</h2>
+                    <p className="subtitle">Auditoria operacional e métricas de consumo</p>
                 </div>
                 <div className="header-actions">
-                    {selectedLogsForPrint.length > 0 && (
-                        <button className="primary-btn secondary-style" onClick={handlePrintSelected} style={{ marginRight: '10px' }}>
-                            <PrinterIcon width={16} height={16} style={{marginRight: '8px'}} />
-                            Imprimir Selecionados: {selectedLogsForPrint.length}
+                    <div className="view-toggle-premium">
+                        <button 
+                            className={`toggle-btn ${viewMode === 'audit' ? 'active' : ''}`}
+                            onClick={() => setViewMode('audit')}
+                        >
+                            <EyeIcon width={14} height={14} />
+                            Auditoria
                         </button>
+                        <button 
+                            className={`toggle-btn ${viewMode === 'consumption' ? 'active' : ''}`}
+                            onClick={() => setViewMode('consumption')}
+                        >
+                            <ChartIcon width={14} height={14} />
+                            Consumo
+                        </button>
+                    </div>
+
+                    {viewMode === 'audit' && (
+                        <>
+                            {selectedLogsForPrint.length > 0 && (
+                                <button className="primary-btn secondary-style" onClick={handlePrintSelected} style={{ marginRight: '10px' }}>
+                                    <PrinterIcon width={16} height={16} style={{marginRight: '8px'}} />
+                                    Imprimir: {selectedLogsForPrint.length}
+                                </button>
+                            )}
+                        </>
                     )}
-                    <button className="primary-btn secondary-style" onClick={() => setShowConsumptionReport(true)} style={{ marginRight: '10px' }}>
-                        📊 Relatório de Consumo
-                    </button>
-                    <button className="primary-btn" onClick={handlePrintShiftReport}>
-                        <ChartIcon width={16} height={16} style={{marginRight: '8px'}} />
-                        Relatório do Dia
-                    </button>
                 </div>
             </header>
 
-            <div className="history-controls">
-                <div className="search-group">
-                    <input
-                        type="text"
-                        placeholder="Buscar por cliente, comanda ou usuário..."
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                        className="search-input"
-                    />
-                    <CustomDatePicker
-                        value={selectedDate}
-                        onChange={setSelectedDate}
-                        className="history-date-filter"
-                    />
+            {viewMode === 'consumption' ? (
+                <div className="embedded-report-container">
+                    <ConsumptionReport onStandalone={true} initialDate={selectedDate} />
                 </div>
-                <div className="filter-tabs">
-                    {['Todos', 'Pistas', 'Reservas', 'Fila'].map(t => (
-                        <button
-                            key={t}
-                            className={`filter-tab ${filter === t ? 'active' : ''}`}
-                            onClick={() => setFilter(t)}
-                        >
-                            {t}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            ) : (
+                <>
+                    <div className="history-controls">
+                        <div className="search-group">
+                            <input
+                                type="text"
+                                placeholder="Buscar por cliente, comanda ou usuário..."
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                className="search-input"
+                            />
+                            <CustomDatePicker
+                                value={selectedDate}
+                                onChange={setSelectedDate}
+                                className="history-date-filter"
+                            />
+                        </div>
+                        <div className="filter-tabs">
+                            {['Todos', 'Pistas', 'Reservas', 'Fila'].map(t => (
+                                <button
+                                    key={t}
+                                    className={`filter-tab ${filter === t ? 'active' : ''}`}
+                                    onClick={() => setFilter(t)}
+                                >
+                                    {t}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-            <div className="history-table-wrapper">
-                <table className="history-table">
-                    <thead>
-                        <tr>
-                            <th style={{ width: '40px' }}></th>
-                            <th>Hora</th>
-                            <th>Usuário</th>
-                            <th>Ação</th>
-                            <th>Descrição</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredLogs.map(log => (
-                            <tr key={log.id} className={`history-row ${selectedLogsForPrint.includes(log.id) ? 'selected' : ''}`}>
-                                <td className="check-col">
-                                    {(log.action === 'Fechar Pista' && log.details) && (
-                                        <input 
-                                            type="checkbox" 
-                                            checked={selectedLogsForPrint.includes(log.id)}
-                                            onChange={() => toggleSelectLog(log.id)}
-                                            className="log-checkbox"
-                                        />
-                                    )}
-                                </td>
-                                <td className="time-col">{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</td>
-                                <td className="user-col">
-                                    <div className="user-pill">{log.userName}</div>
-                                </td>
-                                <td><span className={`action-badge ${log.action.toLowerCase().replace(/ /g, '-')}`}>{log.action}</span></td>
-                                <td className="context-col">{log.context}</td>
-                                <td>
-                                    <div className="row-actions">
-                                        <button className="icon-btn" title="Ver Detalhes" onClick={() => setSelectedLog(log)}>
-                                            <EyeIcon width={16} height={16} />
-                                        </button>
-                                        {log.action === 'Fechar Pista' && log.details && (
-                                            <button className="icon-btn" title="Reimprimir Recibo" onClick={() => setReprintData(log.details)}>
-                                                <PrinterIcon width={16} height={16} />
-                                            </button>
-                                        )}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {filteredLogs.length === 0 && (
-                            <tr>
-                                <td colSpan={6} className="empty-state">Nenhum registro encontrado para este filtro/data.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                    <div className="history-table-wrapper">
+                        <table className="history-table">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: '40px' }}></th>
+                                    <th>Hora</th>
+                                    <th>Usuário</th>
+                                    <th>Ação</th>
+                                    <th>Descrição</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredLogs.map(log => (
+                                    <tr key={log.id} className={`history-row ${selectedLogsForPrint.includes(log.id) ? 'selected' : ''}`}>
+                                        <td className="check-col">
+                                            {(log.action === 'Fechar Pista' && log.details) && (
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={selectedLogsForPrint.includes(log.id)}
+                                                    onChange={() => toggleSelectLog(log.id)}
+                                                    className="log-checkbox"
+                                                />
+                                            )}
+                                        </td>
+                                        <td className="time-col">{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</td>
+                                        <td className="user-col">
+                                            <div className="user-pill">{log.userName}</div>
+                                        </td>
+                                        <td><span className={`action-badge ${log.action.toLowerCase().replace(/ /g, '-')}`}>{log.action}</span></td>
+                                        <td className="context-col">{log.context}</td>
+                                        <td>
+                                            <div className="row-actions">
+                                                <button className="icon-btn" title="Ver Detalhes" onClick={() => setSelectedLog(log)}>
+                                                    <EyeIcon width={16} height={16} />
+                                                </button>
+                                                {log.action === 'Fechar Pista' && log.details && (
+                                                    <button className="icon-btn" title="Reimprimir Recibo" onClick={() => setReprintData(log.details)}>
+                                                        <PrinterIcon width={16} height={16} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {filteredLogs.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="empty-state">Nenhum registro encontrado para este filtro/data.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
 
             {selectedLog && (
                 <div className="modal-overlay" onClick={() => setSelectedLog(null)}>
@@ -278,10 +271,6 @@ const HistoryView: React.FC = () => {
                     {...reprintData}
                     onClose={() => setReprintData(null)}
                 />
-            )}
-
-            {showConsumptionReport && (
-                <ConsumptionReport onClose={() => setShowConsumptionReport(false)} />
             )}
         </section>
     );

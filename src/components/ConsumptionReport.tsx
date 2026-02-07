@@ -6,25 +6,40 @@ import { LaneType } from '../types';
 import './ConsumptionReport.css';
 
 interface ConsumptionReportProps {
-    onClose: () => void;
+    onClose?: () => void;
+    onStandalone?: boolean;
+    initialDate?: string;
 }
 
-const ConsumptionReport: React.FC<ConsumptionReportProps> = ({ onClose }) => {
+const ConsumptionReport: React.FC<ConsumptionReportProps> = ({ onClose, onStandalone, initialDate }) => {
     const { sessions, lanes } = useLanes();
     const { pricing, isHoliday } = useLaneSettings();
     
     // Date range filter
     const [startDate, setStartDate] = useState(() => {
+        if (initialDate) {
+            return `${initialDate}T00:00`;
+        }
         const today = new Date();
         today.setHours(12, 0, 0, 0);
         return today.toISOString().slice(0, 16);
     });
     
     const [endDate, setEndDate] = useState(() => {
+        if (initialDate) {
+            return `${initialDate}T23:59`;
+        }
         const today = new Date();
         today.setHours(23, 59, 0, 0);
         return today.toISOString().slice(0, 16);
     });
+
+    React.useEffect(() => {
+        if (initialDate) {
+            setStartDate(`${initialDate}T00:00`);
+            setEndDate(`${initialDate}T23:59`);
+        }
+    }, [initialDate]);
 
     const getLaneInfo = (laneId: string) => {
         const lane = lanes.find(l => l.id === laneId);
@@ -59,13 +74,14 @@ const ConsumptionReport: React.FC<ConsumptionReportProps> = ({ onClose }) => {
                 id: s.id,
                 dateTime: s.startTime,
                 laneType,
+                laneName: laneInfo.name,
                 durationMin,
                 totalValue,
                 comanda: s.comanda,
                 customerName: s.customerName,
             };
         });
-    }, [filteredSessions, pricing, isHoliday]);
+    }, [filteredSessions, pricing, isHoliday, lanes]);
 
     const totals = useMemo(() => {
         const bolData = reportData.filter(r => r.laneType === 'BOL');
@@ -96,12 +112,14 @@ const ConsumptionReport: React.FC<ConsumptionReportProps> = ({ onClose }) => {
     };
 
     return (
-        <div className="modal-overlay">
-            <div className="consumption-report-modal">
-                <header className="report-header no-print">
-                    <h2>Relatório de Consumo de Horas</h2>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
-                </header>
+        <div className={onStandalone ? "consumption-report-embedded" : "modal-overlay"}>
+            <div className={onStandalone ? "consumption-report-standalone" : "consumption-report-modal"}>
+                {!onStandalone && (
+                    <header className="report-header no-print">
+                        <h2>Relatório de Consumo de Horas</h2>
+                        <button className="close-btn" onClick={onClose}>&times;</button>
+                    </header>
+                )}
 
                 <div className="report-filters no-print">
                     <div className="filter-group">
@@ -133,21 +151,27 @@ const ConsumptionReport: React.FC<ConsumptionReportProps> = ({ onClose }) => {
                     <table className="report-table">
                         <thead>
                             <tr>
-                                <th>Data/Tipo</th>
-                                <th>Tempo</th>
+                                <th>Hora</th>
+                                <th>Tipo</th>
+                                <th>Comanda</th>
+                                <th>Pista</th>
+                                <th>Duração</th>
                                 <th>Valor</th>
                             </tr>
                         </thead>
                         <tbody>
                             {reportData.length === 0 ? (
                                 <tr>
-                                    <td colSpan={3} className="empty-row">Nenhuma sessão encontrada no período</td>
+                                    <td colSpan={6} className="empty-row">Nenhuma sessão encontrada no período</td>
                                 </tr>
                             ) : (
                                 reportData.map(row => (
                                     <tr key={row.id}>
-                                        <td>{formatDateTimeShort(row.dateTime)} {row.laneType}</td>
-                                        <td className="number-col">{row.durationMin},00</td>
+                                        <td>{new Date(row.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                                        <td>{row.laneType === 'BOL' ? 'Boliche' : 'Sinuca'}</td>
+                                        <td>#{row.comanda}</td>
+                                        <td>{row.laneName}</td>
+                                        <td className="number-col">{row.durationMin} min</td>
                                         <td className="number-col">R$ {formatCurrency(row.totalValue)}</td>
                                     </tr>
                                 ))

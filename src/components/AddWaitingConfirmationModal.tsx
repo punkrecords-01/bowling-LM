@@ -7,6 +7,7 @@ interface AddWaitingConfirmationModalProps {
         lanesRequested: number;
         table?: string;
         comanda?: string;
+        placa?: string;
     };
     onCancel: () => void;
     onConfirm: () => void;
@@ -30,8 +31,12 @@ const AddWaitingConfirmationModal: React.FC<AddWaitingConfirmationModalProps> = 
                         <div className="info-row">
                             <span className="label">Pistas:</span>
                             <span className="value text-highlight">{data.lanesRequested}</span>
-                        </div>
-                        {data.table && (
+                        </div>                        {data.placa && (
+                            <div className="info-row">
+                                <span className="label">Placa Física:</span>
+                                <span className="value">{data.placa}</span>
+                            </div>
+                        )}                        {data.table && (
                             <div className="info-row">
                                 <span className="label">Mesa Atual:</span>
                                 <span className="value">{data.table}</span>

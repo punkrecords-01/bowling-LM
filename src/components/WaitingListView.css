@@ -18,7 +18,7 @@
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
 }
 
@@ -125,41 +125,31 @@
 }
 
 .customer-name {
-    font-size: 1.1rem;
-    font-weight: 800;
+    font-size: 1.15rem;
+    font-weight: 900;
     color: white;
+    letter-spacing: -0.01em;
 }
 
-.pax-count {
-    font-size: 0.7rem;
-    font-weight: 700;
-    background: var(--primary-glow);
-    color: var(--primary);
-    padding: 4px 10px;
-    border-radius: 8px;
+.pax-count-simple {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .extra-info {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 4px;
 }
 
-.info-tag {
-    font-size: 0.7rem;
-    font-weight: 800;
-    padding: 4px 12px;
-    border-radius: 8px;
-}
-
-.info-tag.table {
-    background: rgba(255, 215, 0, 0.1);
-    color: var(--primary);
-}
-
-.info-tag.comanda {
-    background: rgba(254, 240, 138, 0.1);
-    color: var(--status-free);
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 4px;
 }
 
 .waiting-status {

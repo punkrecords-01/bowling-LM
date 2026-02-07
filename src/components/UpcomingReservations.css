@@ -65,26 +65,28 @@
 }
 
 .res-mini-card.is-delayed-alert {
-    border-color: rgba(239, 68, 68, 0.4);
-    animation: pulse-red 2s infinite;
+    border-color: rgba(251, 146, 60, 0.6);
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(251, 146, 60, 0.05) 100%);
+    animation: pulse-orange 2s infinite;
 }
 
 .res-mini-card.delayed-confirmed {
-    border-color: rgba(245, 158, 11, 0.3);
+    border-color: rgba(251, 146, 60, 0.4);
+    background: rgba(251, 146, 60, 0.05);
 }
 
-@keyframes pulse-red {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+@keyframes pulse-orange {
+    0% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.3); }
+    70% { box-shadow: 0 0 0 10px rgba(251, 146, 60, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0); }
 }
 
 .is-delayed-alert .res-mini-time {
-    color: #ef4444;
+    color: #fb923c;
 }
 
 .delayed-confirmed .res-mini-time {
-    color: #f59e0b;
+    color: #fb923c;
 }
 
 .res-mini-time {
@@ -190,4 +192,15 @@
 .res-status-btn.no-show:hover {
     background: #ef4444;
     color: white;
+}
+
+.res-status-btn.arrive {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.res-status-btn.arrive:hover {
+    background: white;
+    color: black;
 }
