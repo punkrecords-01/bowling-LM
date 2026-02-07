@@ -15,68 +15,70 @@ function useInView(threshold = 0.18) {
   return { ref, visible };
 }
 
-/* ── animated counter ── */
-function Counter({ end, suffix = '', prefix = '', duration = 2000 }: { end: number; suffix?: string; prefix?: string; duration?: number }) {
-  const [val, setVal] = useState(0);
-  const { ref, visible } = useInView(0.5);
-  useEffect(() => {
-    if (!visible) return;
-    let start = 0;
-    const step = Math.ceil(end / (duration / 16));
-    const id = setInterval(() => {
-      start += step;
-      if (start >= end) { setVal(end); clearInterval(id); } else setVal(start);
-    }, 16);
-    return () => clearInterval(id);
-  }, [visible, end, duration]);
-  return <span ref={ref}>{prefix}{val.toLocaleString('pt-BR')}{suffix}</span>;
-}
-
 /* ── data ── */
 const FEATURES = [
   {
     icon: '🎳',
     title: 'Dashboard em Tempo Real',
-    desc: 'Visão panorâmica de todas as pistas, status, cronômetros e sessões ativas — tudo atualizado ao vivo, sem refresh.',
+    desc: 'Todas as pistas visíveis em uma tela só — status, cronômetro, comanda — tudo ao vivo, sem refresh.',
   },
   {
     icon: '📅',
-    title: 'Reservas Inteligentes',
-    desc: 'Agenda visual completa com criação, edição, check-in em um clique e controle manual de status por pista.',
+    title: 'Reservas & Check-in Manual',
+    desc: 'Agenda completa com criação, edição, check-in em um clique. O operador tem controle total, sem automações forçadas.',
   },
   {
     icon: '⏱️',
-    title: 'Cobrança Automática',
-    desc: 'Tarifas por minuto configuráveis por tipo de pista, com desconto de aniversário, desconto de minutos e recibo detalhado.',
+    title: 'Cobrança por Minuto',
+    desc: 'Tarifa configurável por tipo de pista (boliche ou snooker). Desconto de aniversário, desconto de minutos e recibo automático.',
   },
   {
     icon: '🗺️',
-    title: 'Mapa Interativo',
-    desc: 'Layout visual do centro mostrando o estado de cada pista com cores instantâneas — verde, azul, laranja, vermelho.',
+    title: 'Mapa Visual do Centro',
+    desc: 'Layout do centro com o estado de cada pista em cor — livre, ativa, reservada, manutenção. Visão instantânea.',
   },
   {
     icon: '📋',
-    title: 'Fila de Espera',
-    desc: 'Gerenciamento de fila com prioridades, múltiplas pistas, tags de veículo e reservas diretas a partir da lista.',
+    title: 'Fila de Espera Organizada',
+    desc: 'Lista de espera com nome, quantidade de pistas, comanda e placa. Priorização visual e movimentação direta pra pista.',
   },
   {
     icon: '📊',
-    title: 'Relatórios & Insights',
-    desc: 'Receita do dia, ocupação em tempo real, tempo médio de sessão e relatório de consumo exportável.',
+    title: 'Resumo & Relatórios',
+    desc: 'Receita do dia, ocupação atual, tempo médio de sessão e relatório de consumo — dados reais pra tomar decisão.',
   },
 ];
 
-const BENEFITS = [
-  { number: 40, suffix: '%', label: 'Menos tempo de pista ociosa' },
-  { number: 3, suffix: 'x', label: 'Mais rápido no check-in' },
-  { number: 0, suffix: '', label: 'Reservas perdidas', prefix: '' },
-  { number: 100, suffix: '%', label: 'Operação digital' },
+const WORKFLOW = [
+  {
+    step: '01',
+    title: 'Cliente chega',
+    desc: 'O operador vê as pistas livres no dashboard, escolhe uma e abre com o número da comanda.',
+  },
+  {
+    step: '02',
+    title: 'Sessão ativa',
+    desc: 'O cronômetro roda automaticamente. O valor é calculado em tempo real pela tarifa configurada.',
+  },
+  {
+    step: '03',
+    title: 'Fechamento',
+    desc: 'Um clique fecha a pista, calcula o valor, gera o recibo com tempo, comanda e descontos aplicados.',
+  },
+  {
+    step: '04',
+    title: 'Reservas & Fila',
+    desc: 'Reservas aparecem na agenda e como alertas no dashboard. A fila de espera organiza quem está aguardando.',
+  },
 ];
 
-const TESTIMONIALS = [
-  { name: 'Ricardo M.', role: 'Gerente — Strike Boliche', text: 'Antes eu perdia o controle das pistas toda sexta à noite. Agora, em um olhar, sei exatamente o que está acontecendo.' },
-  { name: 'Fernanda L.', role: 'Proprietária — Bowl & Fun', text: 'O sistema se pagou no primeiro mês. Reduzi o staff do balcão de 3 para 1 e o atendimento ficou mais rápido.' },
-  { name: 'Carlos H.', role: 'Operador — Mega Strike', text: 'Abrir pista, fechar, cobrar, tudo na mesma tela. É absurdamente simples.' },
+const PROBLEMS_SOLVED = [
+  { before: 'Anotar horário de entrada no papel', after: 'Cronômetro automático por pista' },
+  { before: 'Calcular valor na mão ou calculadora', after: 'Cobrança por minuto automática' },
+  { before: 'Não saber quais pistas estão livres', after: 'Dashboard + mapa visual em tempo real' },
+  { before: 'Perder reservas ou esquecer horários', after: 'Agenda com alertas e check-in rápido' },
+  { before: 'Fila desorganizada no balcão', after: 'Lista de espera digital com prioridade' },
+  { before: 'Sem dados de receita ou ocupação', after: 'Relatórios e insights automáticos' },
 ];
 
 export default function PitchPage() {
@@ -84,27 +86,18 @@ export default function PitchPage() {
 
   const scrollTo = (id: string) => {
     setMenuOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    const container = document.querySelector('.pitch');
+    const target = document.getElementById(id);
+    if (container && target) {
+      const top = target.getBoundingClientRect().top + container.scrollTop - 72;
+      container.scrollTo({ top, behavior: 'smooth' });
+    }
   };
-
-  /* parallax scroll for hero */
-  const heroRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handler = () => {
-      if (heroRef.current) {
-        const y = window.scrollY;
-        heroRef.current.style.setProperty('--scroll', `${y * 0.35}px`);
-      }
-    };
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
 
   /* section reveal hooks */
   const feat = useInView();
-  const bene = useInView();
-  const test = useInView();
-  const cta  = useInView();
+  const flow = useInView();
+  const prob = useInView();
   const demo = useInView();
 
   return (
@@ -121,47 +114,64 @@ export default function PitchPage() {
           </button>
           <ul className={`pitch-links ${menuOpen ? 'open' : ''}`}>
             <li><a onClick={() => scrollTo('features')}>Recursos</a></li>
-            <li><a onClick={() => scrollTo('benefits')}>Resultados</a></li>
-            <li><a onClick={() => scrollTo('demo')}>Demo</a></li>
-            <li><a onClick={() => scrollTo('contact')} className="pitch-cta-link">Quero Contratar</a></li>
+            <li><a onClick={() => scrollTo('workflow')}>Como Funciona</a></li>
+            <li><a onClick={() => scrollTo('problems')}>Problemas que Resolve</a></li>
+            <li><a onClick={() => scrollTo('demo')} className="pitch-cta-link">Ver Demo</a></li>
           </ul>
         </div>
       </nav>
 
       {/* ─── HERO ─── */}
-      <section className="pitch-hero" ref={heroRef}>
+      <section className="pitch-hero">
         <div className="pitch-hero-bg" />
         <div className="pitch-hero-content">
-          <div className="pitch-hero-badge">Sistema de Gestão para Centros de Boliche</div>
           <h1>
-            Controle <span className="highlight">total</span> das suas pistas.
-            <br />Em uma <span className="highlight">única tela.</span>
+            O sistema que faltava<br />
+            pro seu <span className="highlight">boliche.</span>
           </h1>
           <p className="pitch-hero-sub">
-            Dashboard em tempo real, reservas, cobrança automática e relatórios —
-            tudo o que seu boliche precisa para operar com máxima eficiência.
+            Controle de pistas, reservas, cobrança e fila de espera — tudo em uma interface única,
+            feita pra funcionar no dia a dia real da operação.
           </p>
           <div className="pitch-hero-actions">
-            <a onClick={() => scrollTo('contact')} className="btn-primary-pitch">Agendar Demonstração</a>
-            <a onClick={() => scrollTo('demo')} className="btn-ghost-pitch">Ver em Ação ▸</a>
-          </div>
-          <div className="pitch-hero-stats">
-            <div><strong>10+</strong><span>Pistas gerenciadas</span></div>
-            <div><strong>∞</strong><span>Reservas simultâneas</span></div>
-            <div><strong>24/7</strong><span>Disponibilidade</span></div>
+            <a onClick={() => scrollTo('demo')} className="btn-primary-pitch">Ver Demo ao Vivo ▸</a>
+            <a onClick={() => scrollTo('features')} className="btn-ghost-pitch">Conhecer Recursos</a>
           </div>
         </div>
         <div className="pitch-hero-glow" />
       </section>
 
+      {/* ─── PROBLEMS SOLVED ─── */}
+      <section className={`pitch-section ${prob.visible ? 'in' : ''}`} id="problems" ref={prob.ref}>
+        <div className="pitch-section-header">
+          <span className="pitch-tag">Antes vs. Depois</span>
+          <h2>O que muda na <span className="highlight">prática</span></h2>
+          <p>Problemas comuns do dia a dia que o sistema resolve de forma direta.</p>
+        </div>
+        <div className="pitch-comparison-grid">
+          {PROBLEMS_SOLVED.map((p, i) => (
+            <div key={i} className="pitch-comparison-row">
+              <div className="pitch-before">
+                <span className="pitch-x">✕</span>
+                {p.before}
+              </div>
+              <div className="pitch-arrow">→</div>
+              <div className="pitch-after">
+                <span className="pitch-check">✔</span>
+                {p.after}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ─── FEATURES ─── */}
-      <section className={`pitch-section ${feat.visible ? 'in' : ''}`} id="features" ref={feat.ref}>
+      <section className={`pitch-section dark ${feat.visible ? 'in' : ''}`} id="features" ref={feat.ref}>
         <div className="pitch-section-header">
           <span className="pitch-tag">Recursos</span>
-          <h2>Tudo que você precisa.<br /><span className="highlight">Nada que você não precisa.</span></h2>
-          <p>Um sistema enxuto, rápido e feito sob medida para a operação de boliche.</p>
+          <h2>O que o sistema <span className="highlight">faz</span></h2>
+          <p>Cada funcionalidade foi pensada pra resolver um problema real da operação.</p>
         </div>
-
         <div className="pitch-features-grid">
           {FEATURES.map((f, i) => (
             <div key={i} className="pitch-feature-card" style={{ animationDelay: `${i * 0.1}s` }}>
@@ -173,21 +183,40 @@ export default function PitchPage() {
         </div>
       </section>
 
-      {/* ─── SCREENSHOT / DEMO ─── */}
+      {/* ─── WORKFLOW ─── */}
+      <section className={`pitch-section ${flow.visible ? 'in' : ''}`} id="workflow" ref={flow.ref}>
+        <div className="pitch-section-header">
+          <span className="pitch-tag">Como Funciona</span>
+          <h2>Fluxo de <span className="highlight">operação</span></h2>
+          <p>Do momento que o cliente chega até o fechamento da conta.</p>
+        </div>
+        <div className="pitch-workflow">
+          {WORKFLOW.map((w, i) => (
+            <div key={i} className="pitch-workflow-step">
+              <div className="pitch-step-number">{w.step}</div>
+              <div className="pitch-step-content">
+                <h3>{w.title}</h3>
+                <p>{w.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── DEMO ─── */}
       <section className={`pitch-section dark ${demo.visible ? 'in' : ''}`} id="demo" ref={demo.ref}>
         <div className="pitch-section-header">
-          <span className="pitch-tag">Demo ao Vivo</span>
+          <span className="pitch-tag">Demo</span>
           <h2>Veja o sistema <span className="highlight">funcionando</span></h2>
-          <p>Clique abaixo para acessar a versão de demonstração completa do dashboard.</p>
+          <p>A versão completa rodando no navegador — clique e explore.</p>
         </div>
         <div className="pitch-demo-frame">
           <div className="pitch-demo-browser">
             <div className="pitch-demo-dots"><span /><span /><span /></div>
-            <span className="pitch-demo-url">strikesystem.app/demo</span>
+            <span className="pitch-demo-url">strike-system / dashboard</span>
           </div>
           <div className="pitch-demo-screen">
             <div className="pitch-demo-mock">
-              {/* Miniature lane cards */}
               <div className="mock-header">
                 <div className="mock-logo">🎳 STRIKE BOLICHE BAR</div>
                 <div className="mock-tabs">
@@ -202,7 +231,7 @@ export default function PitchPage() {
                   <div key={i} className={`mock-lane ${s}`}>
                     <span className="mock-lane-num">{String(i+1).padStart(2,'0')}</span>
                     <span className="mock-lane-status">{s === 'free' ? 'Livre' : s === 'active' ? 'Ativa' : s === 'reserved' ? 'Reservada' : 'Manut.'}</span>
-                    {s === 'active' && <span className="mock-timer">{Math.floor(Math.random()*50+10)}:{String(Math.floor(Math.random()*60)).padStart(2,'0')}</span>}
+                    {s === 'active' && <span className="mock-timer">{[12,34,27,45,18,52][i % 6]}:{String([48,12,33,5,22,41][i % 6]).padStart(2,'0')}</span>}
                   </div>
                 ))}
               </div>
@@ -219,106 +248,28 @@ export default function PitchPage() {
         </div>
       </section>
 
-      {/* ─── BENEFITS ─── */}
-      <section className={`pitch-section ${bene.visible ? 'in' : ''}`} id="benefits" ref={bene.ref}>
+      {/* ─── TECH ─── */}
+      <section className="pitch-section">
         <div className="pitch-section-header">
-          <span className="pitch-tag">Resultados</span>
-          <h2>Números que <span className="highlight">falam sozinhos</span></h2>
+          <span className="pitch-tag">Tecnologia</span>
+          <h2>Feito com stack <span className="highlight">moderna</span></h2>
         </div>
-        <div className="pitch-metrics">
-          {BENEFITS.map((b, i) => (
-            <div key={i} className="pitch-metric">
-              <div className="pitch-metric-num">
-                <Counter end={b.number} suffix={b.suffix} prefix={b.prefix} />
-              </div>
-              <span>{b.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── TESTIMONIALS ─── */}
-      <section className={`pitch-section dark ${test.visible ? 'in' : ''}`} ref={test.ref}>
-        <div className="pitch-section-header">
-          <span className="pitch-tag">Depoimentos</span>
-          <h2>Quem usa, <span className="highlight">recomenda</span></h2>
-        </div>
-        <div className="pitch-testimonials">
-          {TESTIMONIALS.map((t, i) => (
-            <div key={i} className="pitch-testimonial">
-              <p>"{t.text}"</p>
-              <div className="pitch-testimonial-author">
-                <div className="pitch-avatar">{t.name[0]}</div>
-                <div>
-                  <strong>{t.name}</strong>
-                  <span>{t.role}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── PRICING ─── */}
-      <section className={`pitch-section ${cta.visible ? 'in' : ''}`} ref={cta.ref}>
-        <div className="pitch-section-header">
-          <span className="pitch-tag">Planos</span>
-          <h2>Investimento que <span className="highlight">se paga</span></h2>
-        </div>
-        <div className="pitch-pricing">
-          <div className="pitch-price-card">
-            <div className="pitch-price-name">Starter</div>
-            <div className="pitch-price-value">R$ 297<span>/mês</span></div>
-            <ul>
-              <li>✔ Até 8 pistas</li>
-              <li>✔ Dashboard em tempo real</li>
-              <li>✔ Reservas & fila de espera</li>
-              <li>✔ Cobrança automática</li>
-              <li>✔ Suporte por e-mail</li>
-            </ul>
-            <a onClick={() => scrollTo('contact')} className="btn-ghost-pitch">Começar</a>
+        <div className="pitch-tech-grid">
+          <div className="pitch-tech-item">
+            <strong>React + TypeScript</strong>
+            <span>Interface rápida e tipada</span>
           </div>
-          <div className="pitch-price-card featured">
-            <div className="pitch-price-badge">Mais Popular</div>
-            <div className="pitch-price-name">Pro</div>
-            <div className="pitch-price-value">R$ 497<span>/mês</span></div>
-            <ul>
-              <li>✔ Pistas ilimitadas</li>
-              <li>✔ Tudo do Starter</li>
-              <li>✔ Relatórios avançados</li>
-              <li>✔ Mapa interativo</li>
-              <li>✔ Suporte prioritário</li>
-              <li>✔ Personalização de marca</li>
-            </ul>
-            <a onClick={() => scrollTo('contact')} className="btn-primary-pitch">Contratar Agora</a>
+          <div className="pitch-tech-item">
+            <strong>Vite</strong>
+            <span>Build instantâneo</span>
           </div>
-          <div className="pitch-price-card">
-            <div className="pitch-price-name">Enterprise</div>
-            <div className="pitch-price-value">Sob consulta</div>
-            <ul>
-              <li>✔ Multi-unidade</li>
-              <li>✔ Tudo do Pro</li>
-              <li>✔ API & integrações</li>
-              <li>✔ Treinamento presencial</li>
-              <li>✔ SLA garantido</li>
-            </ul>
-            <a onClick={() => scrollTo('contact')} className="btn-ghost-pitch">Fale Conosco</a>
+          <div className="pitch-tech-item">
+            <strong>Tauri (opcional)</strong>
+            <span>Aplicativo desktop nativo</span>
           </div>
-        </div>
-      </section>
-
-      {/* ─── FINAL CTA ─── */}
-      <section className="pitch-final-cta" id="contact">
-        <div className="pitch-final-cta-inner">
-          <h2>Pronto para transformar<br />seu boliche?</h2>
-          <p>Agende uma demonstração gratuita e descubra como o Strike System pode revolucionar sua operação.</p>
-          <div className="pitch-final-actions">
-            <a href="https://wa.me/5511999999999?text=Olá! Tenho interesse no Strike System para meu boliche." target="_blank" rel="noopener noreferrer" className="btn-primary-pitch large">
-              💬 Falar no WhatsApp
-            </a>
-            <a href="mailto:contato@strikesystem.app" className="btn-ghost-pitch large">
-              ✉️ Enviar E-mail
-            </a>
+          <div className="pitch-tech-item">
+            <strong>100% Responsivo</strong>
+            <span>Funciona no PC, tablet e celular</span>
           </div>
         </div>
       </section>
@@ -330,7 +281,7 @@ export default function PitchPage() {
             <span className="pitch-brand-icon">🎳</span>
             <span className="pitch-brand-text">STRIKE<span>SYSTEM</span></span>
           </div>
-          <p>© 2026 Strike System. Todos os direitos reservados.</p>
+          <p>Desenvolvido sob medida para centros de boliche.</p>
         </div>
       </footer>
     </div>
