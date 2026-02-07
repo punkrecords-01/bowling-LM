@@ -254,7 +254,7 @@ const AgendaView: React.FC = () => {
                                     <div className="lane-info">
                                         <span className="lane-badge">
                                             {lane?.name || 'Qualquer'} 
-                                            {res.lanesRequested > 1 && ` (+${res.lanesRequested - 1})`}
+                                            {(res.lanesRequested ?? 0) > 1 && ` (+${(res.lanesRequested ?? 0) - 1})`}
                                         </span>
                                     </div>
                                     {res.observation && (

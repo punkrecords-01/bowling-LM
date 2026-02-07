@@ -7,7 +7,7 @@ interface LaneMapProps {
 }
 
 const LaneMap: React.FC<LaneMapProps> = ({ onLaneClick }) => {
-    const { lanes, sessions, reservations } = useLanes();
+    const { lanes, sessions } = useLanes();
     const [now, setNow] = useState(Date.now());
 
     useEffect(() => {

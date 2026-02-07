@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Lane, Session, LogEntry, LaneStatus, Reservation, WaitingCustomer, LaneType } from '../types';
 import { useAuth } from './AuthContext';
-import { toLocalDateISO } from '../utils/pricing';
 
 interface LaneContextType {
     lanes: Lane[];

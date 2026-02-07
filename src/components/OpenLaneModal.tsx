@@ -10,7 +10,7 @@ interface OpenLaneModalProps {
 }
 
 const OpenLaneModal: React.FC<OpenLaneModalProps> = ({ laneId, onClose, onConfirm }) => {
-    const { reservations, lanes, sessions } = useLanes();
+    const { reservations, lanes } = useLanes();
     const [comanda, setComanda] = useState('');
     const [comandaSearch, setComandaSearch] = useState('');
     const [isReservation, setIsReservation] = useState(false);

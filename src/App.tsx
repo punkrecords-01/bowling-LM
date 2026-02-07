@@ -62,11 +62,6 @@ function AppContent() {
     receiptNumber?: number
   } | null>(null);
 
-  const toLocalDateISO = (ms:number) => {
-    const d = new Date(ms);
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  };
-
   if (!user) return <LoginPage />;
 
   const getActiveSession = (laneId: string) => {
@@ -184,29 +179,6 @@ function AppContent() {
             <div className="lane-grid">
               {lanes.map((lane) => {
                 const session = getActiveSession(lane.id);
-
-                // Find reservations within 10 minutes (only same local day)
-                const nowMs = Date.now();
-                const WINDOW_MS = 10 * 60000;
-
-                // 1. Direct reservations for this lane
-                const directRes = reservations
-                  .filter(r => r.laneId === lane.id && (r.status === 'pending' || r.status === 'arrived'))
-                  .sort((a, b) => a.startTime - b.startTime)[0];
-
-                // 2. "Any lane" reservations that might claim this lane
-                const unassignedRes = reservations
-                  .filter(r => !r.laneId && (r.status === 'pending' || r.status === 'arrived'))
-                  .sort((a, b) => a.startTime - b.startTime);
-
-                // Find which free lanes are "taken" by unassigned reservations
-                const freeLanes = lanes.filter(l => l.status === 'free');
-                const myFreeIndex = freeLanes.findIndex(l => l.id === lane.id);
-                const claimedByUnassigned = myFreeIndex !== -1 && unassignedRes[myFreeIndex];
-
-                const nextRes = directRes || claimedByUnassigned;
-                const isSameDay = nextRes && toLocalDateISO(nextRes.startTime) === toLocalDateISO(nowMs);
-                const isReservedSoon = nextRes && isSameDay && (nextRes.startTime - nowMs < WINDOW_MS);
 
                 const cardStatus = (lane.status === 'active' && lane.isMaintenancePaused) ? 'maintenance' : lane.status;
 

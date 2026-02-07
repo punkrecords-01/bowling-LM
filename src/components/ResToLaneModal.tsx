@@ -9,7 +9,7 @@ interface ResToLaneModalProps {
 }
 
 const ResToLaneModal: React.FC<ResToLaneModalProps> = ({ reservationId, onClose, onConfirm }) => {
-    const { lanes, reservations, sessions } = useLanes();
+    const { lanes, reservations } = useLanes();
     const reservation = reservations.find(r => r.id === reservationId);
     
     const [selectedLaneIds, setSelectedLaneIds] = useState<string[]>(reservation?.laneId ? [reservation.laneId] : []);
