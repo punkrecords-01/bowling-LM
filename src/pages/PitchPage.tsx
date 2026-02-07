@@ -82,6 +82,11 @@ const TESTIMONIALS = [
 export default function PitchPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const scrollTo = (id: string) => {
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   /* parallax scroll for hero */
   const heroRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -115,10 +120,10 @@ export default function PitchPage() {
             <span /><span /><span />
           </button>
           <ul className={`pitch-links ${menuOpen ? 'open' : ''}`}>
-            <li><a href="#features" onClick={() => setMenuOpen(false)}>Recursos</a></li>
-            <li><a href="#benefits" onClick={() => setMenuOpen(false)}>Resultados</a></li>
-            <li><a href="#demo" onClick={() => setMenuOpen(false)}>Demo</a></li>
-            <li><a href="#contact" onClick={() => setMenuOpen(false)} className="pitch-cta-link">Quero Contratar</a></li>
+            <li><a onClick={() => scrollTo('features')}>Recursos</a></li>
+            <li><a onClick={() => scrollTo('benefits')}>Resultados</a></li>
+            <li><a onClick={() => scrollTo('demo')}>Demo</a></li>
+            <li><a onClick={() => scrollTo('contact')} className="pitch-cta-link">Quero Contratar</a></li>
           </ul>
         </div>
       </nav>
@@ -137,8 +142,8 @@ export default function PitchPage() {
             tudo o que seu boliche precisa para operar com máxima eficiência.
           </p>
           <div className="pitch-hero-actions">
-            <a href="#contact" className="btn-primary-pitch">Agendar Demonstração</a>
-            <a href="#demo" className="btn-ghost-pitch">Ver em Ação ▸</a>
+            <a onClick={() => scrollTo('contact')} className="btn-primary-pitch">Agendar Demonstração</a>
+            <a onClick={() => scrollTo('demo')} className="btn-ghost-pitch">Ver em Ação ▸</a>
           </div>
           <div className="pitch-hero-stats">
             <div><strong>10+</strong><span>Pistas gerenciadas</span></div>
@@ -271,7 +276,7 @@ export default function PitchPage() {
               <li>✔ Cobrança automática</li>
               <li>✔ Suporte por e-mail</li>
             </ul>
-            <a href="#contact" className="btn-ghost-pitch">Começar</a>
+            <a onClick={() => scrollTo('contact')} className="btn-ghost-pitch">Começar</a>
           </div>
           <div className="pitch-price-card featured">
             <div className="pitch-price-badge">Mais Popular</div>
@@ -285,7 +290,7 @@ export default function PitchPage() {
               <li>✔ Suporte prioritário</li>
               <li>✔ Personalização de marca</li>
             </ul>
-            <a href="#contact" className="btn-primary-pitch">Contratar Agora</a>
+            <a onClick={() => scrollTo('contact')} className="btn-primary-pitch">Contratar Agora</a>
           </div>
           <div className="pitch-price-card">
             <div className="pitch-price-name">Enterprise</div>
@@ -297,7 +302,7 @@ export default function PitchPage() {
               <li>✔ Treinamento presencial</li>
               <li>✔ SLA garantido</li>
             </ul>
-            <a href="#contact" className="btn-ghost-pitch">Fale Conosco</a>
+            <a onClick={() => scrollTo('contact')} className="btn-ghost-pitch">Fale Conosco</a>
           </div>
         </div>
       </section>
